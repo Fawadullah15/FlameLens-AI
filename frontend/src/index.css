@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme {
+  --color-space-950: #03060c;
+  --color-space-900: #050811;
+  --color-space-850: #080e1b;
+  --color-space-800: #0b1325;
+  --color-space-750: #0e1931;
+  --color-space-700: #142243;
+  --color-space-600: #1c315e;
+
+  --color-cyan-450: #00d4f0;
+  --color-teal-450: #00c9a7;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+
+  --shadow-glow-cyan: 0 0 25px -4px rgba(6, 182, 212, 0.4);
+  --shadow-glow-teal: 0 0 25px -4px rgba(20, 184, 166, 0.4);
+  --shadow-glow-rose: 0 0 25px -4px rgba(244, 63, 94, 0.4);
+  --shadow-glow-danger: 0 0 25px -4px rgba(239, 68, 68, 0.4);
+}
+
+@layer base {
+  body {
+    background-color: #050811;
+    color: #f1f5f9;
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh;
+  }
+}
+
+/* Custom NASA grid overlay */
+.nasa-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(14, 25, 49, 0.4) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14, 25, 49, 0.4) 1px, transparent 1px);
+}
+
+.nasa-card {
+  background: linear-gradient(135deg, rgba(11, 19, 37, 0.9) 0%, rgba(8, 14, 27, 0.98) 100%);
+  border: 1px solid rgba(30, 49, 94, 0.6);
+  backdrop-filter: blur(12px);
+}
+
+.nasa-card-active {
+  background: linear-gradient(135deg, rgba(14, 25, 49, 0.95) 0%, rgba(11, 19, 37, 0.98) 100%);
+  border: 1px solid rgba(6, 182, 212, 0.6);
+  box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.25);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050811;
+}
+::-webkit-scrollbar-thumb {
+  background: #1c315e;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #06b6d4;
+}
