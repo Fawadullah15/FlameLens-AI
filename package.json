@@ -2,10 +2,7 @@
   "name": "flamelens-ai",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "frontend"
-  ],
   "scripts": {
-    "build": "npm --prefix frontend run build"
+    "build": "cd frontend && npm install && npm run build"
   }
 }
