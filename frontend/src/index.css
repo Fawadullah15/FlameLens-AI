@@ -1,68 +1,109 @@
 @import "tailwindcss";
 
 @theme {
-  --color-space-950: #03060c;
-  --color-space-900: #050811;
-  --color-space-850: #080e1b;
-  --color-space-800: #0b1325;
-  --color-space-750: #0e1931;
-  --color-space-700: #142243;
-  --color-space-600: #1c315e;
+  /* NASA Mission Control Palette */
+  --color-space-950: #05090D; /* Main background */
+  --color-space-900: #0A1118; /* Secondary background */
+  --color-space-850: #0E1821; /* Panel background */
+  --color-space-800: #13212C; /* Elevated surface */
+  --color-space-750: #172836; /* Hover surface */
+  --color-space-700: #1E3442; /* Primary borders */
+  --color-space-600: #2C485A; /* Accent borders */
 
-  --color-cyan-450: #00d4f0;
-  --color-teal-450: #00c9a7;
+  --color-cyan-400: #22D3EE;  /* Primary cyan */
+  --color-cyan-600: #0891B2;  /* Secondary cyan */
+  --color-flame-500: #FF7139; /* Flame orange */
+  --color-amber-400: #F5B942; /* Warning amber */
+  --color-emerald-400: #36D399; /* Success green */
 
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --color-slate-100: #F1F5F9; /* Primary text */
+  --color-slate-400: #94A3B8; /* Secondary text */
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-display: 'Space Grotesk', system-ui, sans-serif;
 
-  --shadow-glow-cyan: 0 0 25px -4px rgba(6, 182, 212, 0.4);
-  --shadow-glow-teal: 0 0 25px -4px rgba(20, 184, 166, 0.4);
-  --shadow-glow-rose: 0 0 25px -4px rgba(244, 63, 94, 0.4);
-  --shadow-glow-danger: 0 0 25px -4px rgba(239, 68, 68, 0.4);
+  --shadow-glow-cyan: 0 0 20px -3px rgba(34, 211, 238, 0.35);
+  --shadow-glow-teal: 0 0 20px -3px rgba(54, 211, 153, 0.35);
+  --shadow-glow-flame: 0 0 20px -3px rgba(255, 113, 57, 0.35);
+  --shadow-glow-amber: 0 0 20px -3px rgba(245, 185, 66, 0.35);
+  --shadow-glow-danger: 0 0 20px -3px rgba(239, 68, 68, 0.35);
 }
 
 @layer base {
   body {
-    background-color: #050811;
-    color: #f1f5f9;
+    background-color: #05090D;
+    color: #F1F5F9;
     font-family: 'Inter', system-ui, sans-serif;
     min-height: 100vh;
+    overflow-x: hidden;
   }
 }
 
-/* Custom NASA grid overlay */
+/* Aerospace Technical Grid & Scanlines */
 .nasa-grid {
-  background-size: 32px 32px;
+  background-size: 28px 28px;
   background-image: 
-    linear-gradient(to right, rgba(14, 25, 49, 0.4) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(14, 25, 49, 0.4) 1px, transparent 1px);
+    linear-gradient(to right, rgba(30, 52, 66, 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30, 52, 66, 0.35) 1px, transparent 1px);
+}
+
+.mission-panel {
+  background: linear-gradient(180deg, #0E1821 0%, #0A1118 100%);
+  border: 1px solid #1E3442;
+  border-radius: 0.625rem;
+}
+
+.mission-panel-elevated {
+  background: linear-gradient(180deg, #13212C 0%, #0E1821 100%);
+  border: 1px solid #1E3442;
+  border-radius: 0.625rem;
+}
+
+.mission-panel-active {
+  background: linear-gradient(180deg, #13212C 0%, #0E1821 100%);
+  border: 1px solid #22D3EE;
+  box-shadow: 0 0 16px -2px rgba(34, 211, 238, 0.25);
+  border-radius: 0.625rem;
 }
 
 .nasa-card {
-  background: linear-gradient(135deg, rgba(11, 19, 37, 0.9) 0%, rgba(8, 14, 27, 0.98) 100%);
-  border: 1px solid rgba(30, 49, 94, 0.6);
-  backdrop-filter: blur(12px);
+  background: linear-gradient(180deg, #0E1821 0%, #0A1118 100%);
+  border: 1px solid #1E3442;
+  border-radius: 0.625rem;
 }
 
 .nasa-card-active {
-  background: linear-gradient(135deg, rgba(14, 25, 49, 0.95) 0%, rgba(11, 19, 37, 0.98) 100%);
-  border: 1px solid rgba(6, 182, 212, 0.6);
-  box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.25);
+  background: linear-gradient(180deg, #13212C 0%, #0E1821 100%);
+  border: 1px solid #22D3EE;
+  box-shadow: 0 0 16px -2px rgba(34, 211, 238, 0.25);
+  border-radius: 0.625rem;
 }
 
-/* Custom Scrollbar */
+/* Monospace telemetry pill */
+.telemetry-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+  background-color: #0A1118;
+  border: 1px solid #1E3442;
+  color: #94A3B8;
+}
+
+/* Custom Aerospace Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #050811;
+  background: #05090D;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1c315e;
-  border-radius: 3px;
+  background: #1E3442;
+  border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #06b6d4;
+  background: #22D3EE;
 }

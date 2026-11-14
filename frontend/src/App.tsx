@@ -1,28 +1,35 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
-import { Dashboard } from './pages/Dashboard';
-import { FlameAnalysis } from './pages/FlameAnalysis';
-import { ExperimentComparison } from './pages/ExperimentComparison';
-import { FireSafetyIntelligence } from './pages/FireSafetyIntelligence';
-import { AIChat } from './pages/AIChat';
-import { ResearchLibrary } from './pages/ResearchLibrary';
-import { Reports } from './pages/Reports';
-import { HistoricalIncidents } from './pages/HistoricalIncidents';
+import { MissionOverview } from './pages/MissionOverview';
+import { CombustionIntelligence } from './pages/CombustionIntelligence';
+import { ResearchExplorer } from './pages/ResearchExplorer';
+import { ScientificAnalysis } from './pages/ScientificAnalysis';
+import { AICopilot } from './pages/AICopilot';
+import { MissionSafety } from './pages/MissionSafety';
+import { ReportsFindings } from './pages/ReportsFindings';
 
 export const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="analysis" element={<FlameAnalysis />} />
-          <Route path="incidents" element={<HistoricalIncidents />} />
-          <Route path="comparison" element={<ExperimentComparison />} />
-          <Route path="risk" element={<FireSafetyIntelligence />} />
-          <Route path="assistant" element={<AIChat />} />
-          <Route path="library" element={<ResearchLibrary />} />
-          <Route path="reports" element={<Reports />} />
+          {/* 7 Core Mission Intelligence Pages */}
+          <Route index element={<MissionOverview />} />
+          <Route path="combustion" element={<CombustionIntelligence />} />
+          <Route path="library" element={<ResearchExplorer />} />
+          <Route path="analysis" element={<ScientificAnalysis />} />
+          <Route path="copilot" element={<AICopilot />} />
+          <Route path="safety" element={<MissionSafety />} />
+          <Route path="reports" element={<ReportsFindings />} />
+
+          {/* Backward Compatibility Aliases */}
+          <Route path="comparison" element={<ScientificAnalysis />} />
+          <Route path="assistant" element={<AICopilot />} />
+          <Route path="risk" element={<MissionSafety />} />
+          <Route path="incidents" element={<MissionSafety defaultTab="incidents" />} />
+
+          {/* Catch-all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
