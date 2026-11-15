@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import {
   Search,
   Menu,
@@ -82,6 +82,17 @@ export const Navbar: React.FC<NavbarProps> = ({
             <PanelLeft className="w-4 h-4" />
           </button>
         )}
+
+        <Link to="/" className="flex items-center space-x-1.5 mr-1 group" title="FlameLens Home">
+          <img
+            src="/logo.png"
+            alt="FlameLens Q Insignia"
+            className="w-5 h-5 object-contain"
+          />
+          <span className="text-[13px] font-semibold text-[#0D0D0D] hidden sm:inline">FlameLens</span>
+        </Link>
+
+        <span className="text-[#D0D0D0] text-xs">/</span>
 
         <div className="text-[13px] font-medium text-[#0D0D0D] flex items-center space-x-2">
           <span>{pageTitle}</span>

@@ -346,10 +346,12 @@ export const Settings: React.FC = () => {
 
           {activeTab === 'about' && (
             <div className="p-6 bg-white border border-[#E5E5E5] rounded-[10px] space-y-4 shadow-2xs">
-              <div className="flex items-center space-x-2">
-                <div className="w-7 h-7 rounded-[6px] bg-[#0D0D0D] flex items-center justify-center text-white font-bold text-xs">
-                  <span className="text-[#B86B39]">F</span>L
-                </div>
+              <div className="flex items-center space-x-2.5">
+                <img
+                  src="/logo.png"
+                  alt="FlameLens Q Insignia"
+                  className="w-8 h-8 object-contain shrink-0"
+                />
                 <div>
                   <h3 className="text-sm font-semibold text-[#0D0D0D]">FlameLens AI</h3>
                   <p className="text-[11px] text-[#8F8F8F]">Version 1.4.2 • Scientific Intelligence</p>

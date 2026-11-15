@@ -432,7 +432,12 @@ export const AICopilot: React.FC = () => {
           {messages.length === 0 ? (
             /* Empty State: ChatGPT Style Welcome */
             <div className="py-16 sm:py-24 text-center space-y-6 sm:space-y-8">
-              <div className="space-y-2 max-w-lg mx-auto">
+              <div className="space-y-3 max-w-lg mx-auto flex flex-col items-center">
+                <img
+                  src="/logo.png"
+                  alt="FlameLens Q Insignia"
+                  className="w-12 h-12 object-contain"
+                />
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-[#0D0D0D] tracking-tight">
                   What would you like to investigate?
                 </h2>
@@ -473,9 +478,11 @@ export const AICopilot: React.FC = () => {
                       /* Assistant message: clean typography directly on white */
                       <div className="space-y-3 pt-2">
                         <div className="flex items-center space-x-2">
-                          <div className="w-5 h-5 rounded-[4px] bg-[#0D0D0D] text-white flex items-center justify-center font-bold text-[10px]">
-                            FL
-                          </div>
+                          <img
+                            src="/logo.png"
+                            alt="FlameLens Q Emblem"
+                            className="w-5 h-5 object-contain shrink-0"
+                          />
                           <span className="text-xs font-semibold text-[#0D0D0D]">FlameLens Intelligence</span>
                           <span className="text-[11px] font-mono text-[#8F8F8F]">{msg.timestamp}</span>
                         </div>

@@ -53,6 +53,13 @@ export const MissionOverview: React.FC = () => {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16 space-y-16">
       {/* ── 1. CHATGPT-STYLE HERO GREETING & COMPOSER ───────────────────── */}
       <div className="text-center space-y-6">
+        <div className="flex justify-center">
+          <img
+            src="/logo.png"
+            alt="FlameLens Q Insignia"
+            className="w-12 h-12 object-contain"
+          />
+        </div>
         <div className="space-y-2">
           <h1 className="text-3xl sm:text-4xl font-semibold text-[#0D0D0D] tracking-tight">
             Explore microgravity combustion.

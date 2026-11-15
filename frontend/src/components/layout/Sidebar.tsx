@@ -69,9 +69,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Brand & Sidebar Toggle */}
         <div className="h-12 px-3.5 flex items-center justify-between border-b border-[#EBEBEB]">
           <div className="flex items-center space-x-2.5">
-            <div className="w-6 h-6 rounded-[6px] bg-[#0D0D0D] text-white flex items-center justify-center font-bold text-xs tracking-tight">
-              <span className="text-[#B86B39]">F</span>L
-            </div>
+            <img
+              src="/logo.png"
+              alt="FlameLens Q Insignia"
+              className="w-6 h-6 object-contain shrink-0"
+            />
             <span className="font-semibold text-[14px] text-[#0D0D0D] tracking-tight">
               FlameLens AI
             </span>
@@ -195,9 +197,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* User / Team Profile Row */}
         <div className="pt-1.5 mt-1 border-t border-[#EBEBEB] px-2 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 rounded-full bg-[#E5E5E5] flex items-center justify-center text-[10px] font-semibold text-[#0D0D0D]">
-              QX
-            </div>
+            <img
+              src="/logo.png"
+              alt="QuantumX Q Emblem"
+              className="w-6 h-6 rounded-full object-contain bg-[#0D0D0D] p-0.5 shrink-0"
+            />
             <div className="leading-tight">
               <div className="text-[12px] font-medium text-[#0D0D0D]">QuantumX</div>
               <div className="text-[10px] text-[#8F8F8F]">NASA Space Apps</div>
