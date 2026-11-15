@@ -30,7 +30,6 @@ export const MissionSafety: React.FC<MissionSafetyProps> = ({ defaultTab = 'risk
 
   // Risk Ranking State
   const [rankings, setRankings] = useState<RiskRankingItem[]>([]);
-  const [methodology, setMethodology] = useState<string>('NASA-STD-6001B Flammability Screening Matrix');
   const [riskFilter, setRiskFilter] = useState<string>('');
   const [rankLoading, setRankLoading] = useState(false);
 
@@ -45,11 +44,9 @@ export const MissionSafety: React.FC<MissionSafetyProps> = ({ defaultTab = 'risk
     })
       .then(res => {
         setRankings(res.rankings);
-        setMethodology(res.methodology);
         setRankLoading(false);
       })
-      .catch(err => {
-        console.error('Failed to load risk rankings:', err);
+      .catch(() => {
         setRankLoading(false);
       });
   }, [riskFilter]);
@@ -62,50 +59,48 @@ export const MissionSafety: React.FC<MissionSafetyProps> = ({ defaultTab = 'risk
           setSelectedIncident(res.incidents[0]);
         }
       })
-      .catch(err => console.error('Failed to load incidents:', err));
+      .catch(() => {});
   }, []);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-      {/* ── HEADER ──────────────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#E5E5E5]">
+    <div className="page-container space-y-6">
+      {/* ── UNIFIED PAGE HEADER ─────────────────────────────────────────── */}
+      <div className="page-header">
         <div>
-          <h1 className="text-xl sm:text-2xl font-semibold text-[#272727] tracking-tight">
-            Fire Safety Intelligence
-          </h1>
-          <p className="text-xs sm:text-[13px] text-[#6B6B6B] mt-0.5">
+          <h1 className="page-title">Fire Safety Intelligence</h1>
+          <p className="page-subtitle">
             NASA-STD-6001B flammability assessments, spacecraft atmospheric risk metrics, and historical incident forensics.
           </p>
         </div>
 
         {/* Tab Controls */}
-        <div className="flex items-center space-x-1 p-1 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[9px] text-xs font-medium">
+        <div className="inline-flex items-center p-1 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[9px] text-xs font-medium">
           <button
             onClick={() => setActiveTab('risk')}
-            className={`px-3 py-1.5 rounded-[6px] transition-colors ${
+            className={`px-3 py-1 rounded-[6px] transition-colors ${
               activeTab === 'risk'
-                ? 'bg-white text-[#272727] shadow-xs'
-                : 'text-[#6B6B6B] hover:text-[#272727]'
+                ? 'bg-white text-[#0D0D0D] shadow-2xs font-semibold'
+                : 'text-[#6E6E6E] hover:text-[#0D0D0D]'
             }`}
           >
             Flammability Assessment
           </button>
           <button
             onClick={() => setActiveTab('incidents')}
-            className={`px-3 py-1.5 rounded-[6px] transition-colors ${
+            className={`px-3 py-1 rounded-[6px] transition-colors ${
               activeTab === 'incidents'
-                ? 'bg-white text-[#272727] shadow-xs'
-                : 'text-[#6B6B6B] hover:text-[#272727]'
+                ? 'bg-white text-[#0D0D0D] shadow-2xs font-semibold'
+                : 'text-[#6E6E6E] hover:text-[#0D0D0D]'
             }`}
           >
             Historical Incidents
           </button>
           <button
             onClick={() => setActiveTab('protocols')}
-            className={`px-3 py-1.5 rounded-[6px] transition-colors ${
+            className={`px-3 py-1 rounded-[6px] transition-colors ${
               activeTab === 'protocols'
-                ? 'bg-white text-[#272727] shadow-xs'
-                : 'text-[#6B6B6B] hover:text-[#272727]'
+                ? 'bg-white text-[#0D0D0D] shadow-2xs font-semibold'
+                : 'text-[#6E6E6E] hover:text-[#0D0D0D]'
             }`}
           >
             Suppression Protocols
@@ -117,29 +112,29 @@ export const MissionSafety: React.FC<MissionSafetyProps> = ({ defaultTab = 'risk
       {activeTab === 'risk' && (
         <div className="space-y-6">
           {/* Mathematical Formula Callout */}
-          <div className="p-4 bg-[#F8F1EC]/60 border border-[#EBDAD0] rounded-[10px] space-y-2">
+          <div className="p-4 bg-[#F8F1EC]/60 border border-[#EBDAD0] rounded-[10px] space-y-2 shadow-2xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-[#B86B39] uppercase tracking-wide">
                 NASA Standard Flammability Risk Index Formulation
               </span>
-              <span className="text-[11px] font-mono text-[#8A8A8A]">NASA-STD-6001B</span>
+              <span className="text-[11px] font-mono text-[#8F8F8F]">NASA-STD-6001B</span>
             </div>
-            <div className="font-mono text-xs text-[#272727] bg-white p-2.5 rounded-[6px] border border-[#EBDAD0]/80">
+            <div className="font-mono text-xs text-[#0D0D0D] bg-white p-2.5 rounded-[6px] border border-[#EBDAD0]">
               Score = 0.35 × (LOI Index) + 0.25 × (Thermal Severity) + 0.20 × (Soot Radiation) + 0.20 × (Extinction Resistance)
             </div>
-            <p className="text-[11px] text-[#6B6B6B]">
-              <strong className="text-[#272727]">Data Provenance:</strong> Flammability limits are measured via Glenn 2.2-Second Drop Tower and ISS CIR experiments; suppression resistance is analytically modeled.
+            <p className="text-[11px] text-[#6E6E6E]">
+              <strong className="text-[#0D0D0D]">Data Provenance:</strong> Flammability limits are derived from Glenn 2.2-Second Drop Tower and ISS CIR experiments; suppression resistance is analytically modeled.
             </p>
           </div>
 
           {/* Risk Rankings Table */}
-          <div className="bg-white border border-[#E5E5E5] rounded-[10px] overflow-hidden shadow-xs">
+          <div className="table-shell shadow-2xs">
             <div className="p-4 border-b border-[#E5E5E5] flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-semibold text-[#272727]">
+                <h3 className="text-sm font-semibold text-[#0D0D0D]">
                   Spacecraft Fuel & Material Flammability Rankings
                 </h3>
-                <p className="text-xs text-[#6B6B6B]">
+                <p className="text-xs text-[#6E6E6E]">
                   Evaluated across standard 21% O₂ Earth baseline vs 32% exploration habitat atmospheres
                 </p>
               </div>
@@ -147,7 +142,7 @@ export const MissionSafety: React.FC<MissionSafetyProps> = ({ defaultTab = 'risk
               <select
                 value={riskFilter}
                 onChange={(e) => setRiskFilter(e.target.value)}
-                className="px-2.5 py-1 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[6px] text-xs text-[#272727] focus:outline-none"
+                className="select-standard"
               >
                 <option value="">All Risk Levels</option>
                 <option value="CRITICAL">Critical</option>
@@ -160,25 +155,25 @@ export const MissionSafety: React.FC<MissionSafetyProps> = ({ defaultTab = 'risk
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-[13px]">
                 <thead>
-                  <tr className="bg-[#F7F7F8] border-b border-[#E5E5E5] text-[11px] font-medium text-[#8A8A8A] uppercase">
-                    <th className="py-2.5 px-4">Fuel / Material</th>
-                    <th className="py-2.5 px-4 font-mono">Risk Score</th>
-                    <th className="py-2.5 px-4">Classification</th>
-                    <th className="py-2.5 px-4 font-mono">LOI (O₂ %)</th>
-                    <th className="py-2.5 px-4">Soot Hazard</th>
-                    <th className="py-2.5 px-4 text-right">Actions</th>
+                  <tr>
+                    <th className="table-header-cell">Fuel / Material</th>
+                    <th className="table-header-cell font-mono w-28">Risk Score</th>
+                    <th className="table-header-cell w-32">Classification</th>
+                    <th className="table-header-cell font-mono w-32">LOI (O₂ %)</th>
+                    <th className="table-header-cell w-36">Soot Hazard</th>
+                    <th className="table-header-cell text-right w-28">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E5E5E5]">
+                <tbody>
                   {rankLoading ? (
                     <tr>
-                      <td colSpan={6} className="py-10 text-center text-xs text-[#8A8A8A]">
+                      <td colSpan={6} className="table-body-cell text-center py-10 text-xs text-[#8F8F8F]">
                         Calculating flammability screening scores...
                       </td>
                     </tr>
                   ) : rankings.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="py-10 text-center text-xs text-[#8A8A8A]">
+                      <td colSpan={6} className="table-body-cell text-center py-10 text-xs text-[#8F8F8F]">
                         No materials match the filter.
                       </td>
                     </tr>
@@ -190,14 +185,14 @@ export const MissionSafety: React.FC<MissionSafetyProps> = ({ defaultTab = 'risk
 
                       return (
                         <tr key={idx} className="hover:bg-[#F9F9FA]">
-                          <td className="py-3 px-4">
-                            <div className="font-semibold text-[#272727]">{r.fuel_type}</div>
-                            <div className="text-[11px] text-[#8A8A8A]">{r.fuel_category}</div>
+                          <td className="table-body-cell">
+                            <div className="font-semibold text-[#0D0D0D]">{r.fuel_type}</div>
+                            <div className="text-[11px] text-[#8F8F8F]">{r.fuel_category}</div>
                           </td>
-                          <td className="py-3 px-4 font-mono text-xs font-semibold text-[#272727]">
+                          <td className="table-body-cell font-mono text-xs font-semibold text-[#0D0D0D]">
                             {r.risk_score ? r.risk_score.toFixed(1) : '—'} / 100
                           </td>
-                          <td className="py-3 px-4">
+                          <td className="table-body-cell">
                             <span
                               className={`px-2 py-0.5 rounded text-[10px] font-mono font-medium ${
                                 isCrit
@@ -212,13 +207,13 @@ export const MissionSafety: React.FC<MissionSafetyProps> = ({ defaultTab = 'risk
                               {r.risk_level}
                             </span>
                           </td>
-                          <td className="py-3 px-4 font-mono text-xs text-[#555555]">
+                          <td className="table-body-cell font-mono text-xs text-[#555555]">
                             {r.limiting_oxygen_index_percent ? `${r.limiting_oxygen_index_percent.toFixed(1)}%` : '15.2%'}
                           </td>
-                          <td className="py-3 px-4 text-xs text-[#6B6B6B]">
+                          <td className="table-body-cell text-xs text-[#6E6E6E]">
                             {r.soot_hazard_score ? (r.soot_hazard_score > 70 ? 'Severe (Blockage)' : 'Moderate') : 'Low'}
                           </td>
-                          <td className="py-3 px-4 text-right">
+                          <td className="table-body-cell text-right">
                             <button
                               onClick={() => {
                                 navigate(
@@ -227,7 +222,7 @@ export const MissionSafety: React.FC<MissionSafetyProps> = ({ defaultTab = 'risk
                                   )}`
                                 );
                               }}
-                              className="text-xs font-medium text-[#272727] hover:text-[#B86B39]"
+                              className="text-xs font-medium text-[#0D0D0D] hover:text-[#B86B39]"
                             >
                               Inquire AI →
                             </button>
@@ -248,7 +243,7 @@ export const MissionSafety: React.FC<MissionSafetyProps> = ({ defaultTab = 'risk
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* List of Incidents */}
           <div className="space-y-2">
-            <span className="text-xs font-semibold text-[#8A8A8A] uppercase tracking-wide block mb-1">
+            <span className="text-xs font-semibold text-[#8F8F8F] uppercase tracking-wide block mb-1">
               Historical Spaceflight Fire Incidents
             </span>
             {incidents.map((inc) => (
@@ -257,20 +252,20 @@ export const MissionSafety: React.FC<MissionSafetyProps> = ({ defaultTab = 'risk
                 onClick={() => setSelectedIncident(inc)}
                 className={`w-full text-left p-3.5 rounded-[9px] border transition-colors ${
                   selectedIncident?.incident_id === inc.incident_id
-                    ? 'bg-white border-[#242424] shadow-xs'
-                    : 'bg-white border-[#E5E5E5] hover:border-[#D4D4D4] text-[#6B6B6B]'
+                    ? 'bg-white border-[#0D0D0D] shadow-2xs'
+                    : 'bg-white border-[#E5E5E5] hover:border-[#D4D4D4] text-[#6E6E6E]'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-xs font-semibold text-[#B86B39]">
                     {inc.incident_id}
                   </span>
-                  <span className="text-[11px] text-[#8A8A8A] font-mono">{inc.year}</span>
+                  <span className="text-[11px] text-[#8F8F8F] font-mono">{inc.year}</span>
                 </div>
-                <div className="font-semibold text-xs text-[#272727] mt-1">
+                <div className="font-semibold text-xs text-[#0D0D0D] mt-1">
                   {inc.title}
                 </div>
-                <div className="text-[11px] text-[#8A8A8A] mt-0.5 truncate">
+                <div className="text-[11px] text-[#8F8F8F] mt-0.5 truncate">
                   Mission: {inc.mission_spacecraft}
                 </div>
               </button>
@@ -279,45 +274,45 @@ export const MissionSafety: React.FC<MissionSafetyProps> = ({ defaultTab = 'risk
 
           {/* Incident Detail View */}
           {selectedIncident && (
-            <div className="md:col-span-2 p-6 bg-white border border-[#E5E5E5] rounded-[10px] space-y-5">
+            <div className="md:col-span-2 p-6 bg-white border border-[#E5E5E5] rounded-[10px] space-y-5 shadow-2xs">
               <div className="border-b border-[#E5E5E5] pb-3">
                 <div className="flex items-center space-x-2">
                   <span className="font-mono text-xs font-semibold text-[#B86B39]">
                     {selectedIncident.incident_id}
                   </span>
-                  <span className="text-xs text-[#8A8A8A]">• {selectedIncident.year}</span>
+                  <span className="text-xs text-[#8F8F8F]">• {selectedIncident.year}</span>
                   <span className="text-xs px-2 py-0.5 rounded bg-[#F7F7F8] border border-[#E5E5E5] font-mono text-[#555555]">
                     {selectedIncident.mission_spacecraft}
                   </span>
                 </div>
-                <h3 className="text-lg font-semibold text-[#272727] mt-1">
+                <h3 className="text-lg font-semibold text-[#0D0D0D] mt-1">
                   {selectedIncident.title}
                 </h3>
               </div>
 
               <div>
-                <h4 className="text-xs font-semibold uppercase text-[#8A8A8A] tracking-wider mb-1.5">
+                <h4 className="text-xs font-semibold uppercase text-[#8F8F8F] tracking-wider mb-1.5">
                   Chronology & Description
                 </h4>
-                <p className="text-xs text-[#333333] leading-relaxed">
+                <p className="text-xs text-[#2D2D2D] leading-relaxed">
                   {selectedIncident.description}
                 </p>
               </div>
 
               <div>
-                <h4 className="text-xs font-semibold uppercase text-[#8A8A8A] tracking-wider mb-1.5">
+                <h4 className="text-xs font-semibold uppercase text-[#8F8F8F] tracking-wider mb-1.5">
                   Physical Mechanism & Atmosphere
                 </h4>
-                <div className="p-3 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px] text-xs font-mono text-[#272727]">
+                <div className="p-3 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px] text-xs font-mono text-[#0D0D0D]">
                   Atmosphere: {selectedIncident.atmosphere_context || '100% O2 @ 16.7 psia'} • Cause: {selectedIncident.primary_cause || 'Electrical spark & flammable materials'}
                 </div>
               </div>
 
               <div>
-                <h4 className="text-xs font-semibold uppercase text-[#8A8A8A] tracking-wider mb-1.5">
+                <h4 className="text-xs font-semibold uppercase text-[#8F8F8F] tracking-wider mb-1.5">
                   Safety Lessons & Engineering Directives
                 </h4>
-                <p className="text-xs text-[#333333] leading-relaxed">
+                <p className="text-xs text-[#2D2D2D] leading-relaxed">
                   {selectedIncident.safety_lessons}
                 </p>
               </div>
@@ -331,7 +326,7 @@ export const MissionSafety: React.FC<MissionSafetyProps> = ({ defaultTab = 'risk
                       )}`
                     );
                   }}
-                  className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-[#242424] text-white hover:bg-[#383838] rounded-[6px] text-xs font-medium transition-colors"
+                  className="btn-primary"
                 >
                   <MessageSquare className="w-3.5 h-3.5" />
                   <span>Analyze Case Study with AI</span>
@@ -345,28 +340,28 @@ export const MissionSafety: React.FC<MissionSafetyProps> = ({ defaultTab = 'risk
       {/* ── TAB 3: SUPPRESSION PROTOCOLS ──────────────────────────────────── */}
       {activeTab === 'protocols' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-5 bg-white border border-[#E5E5E5] rounded-[10px] space-y-3">
-            <h3 className="text-sm font-semibold text-[#272727]">
+          <div className="p-5 bg-white border border-[#E5E5E5] rounded-[10px] space-y-3 shadow-2xs">
+            <h3 className="text-sm font-semibold text-[#0D0D0D]">
               Microgravity Fire Suppression Challenges
             </h3>
-            <p className="text-xs text-[#6B6B6B] leading-relaxed">
+            <p className="text-xs text-[#6E6E6E] leading-relaxed">
               Standard terrestrial fire extinguishers rely on buoyant thermal drafts to pull suppressant vapor into the flame base. In microgravity:
             </p>
-            <ul className="text-xs text-[#333333] space-y-1.5 list-disc pl-4">
+            <ul className="text-xs text-[#2D2D2D] space-y-1.5 list-disc pl-4">
               <li>No buoyancy creates stagnant diffusion zones where flames smolder quietly.</li>
               <li>Carbon dioxide (CO₂) fire extinguishers must be injected directly with localized forced convection.</li>
               <li>Cabin ventilation must be immediately shut down to prevent feeding oxygen to the combustion site.</li>
             </ul>
           </div>
 
-          <div className="p-5 bg-white border border-[#E5E5E5] rounded-[10px] space-y-3">
-            <h3 className="text-sm font-semibold text-[#272727]">
+          <div className="p-5 bg-white border border-[#E5E5E5] rounded-[10px] space-y-3 shadow-2xs">
+            <h3 className="text-sm font-semibold text-[#0D0D0D]">
               Smoke Detection Latency
             </h3>
-            <p className="text-xs text-[#6B6B6B] leading-relaxed">
+            <p className="text-xs text-[#6E6E6E] leading-relaxed">
               Without thermal buoyancy, smoke particles do not rise to ceiling-mounted optical detectors. Detection depends entirely on cabin ventilation duct sensors.
             </p>
-            <div className="p-3 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px] text-xs font-mono text-[#272727]">
+            <div className="p-3 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px] text-xs font-mono text-[#0D0D0D]">
               Peclet Number: Pe = (u × d) / α &gt;&gt; 1 required for forced transport to optical smoke obscuration sensors.
             </div>
           </div>

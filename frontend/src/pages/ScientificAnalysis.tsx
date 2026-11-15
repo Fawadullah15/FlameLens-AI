@@ -4,9 +4,6 @@ import {
   GitCompare,
   ArrowRight,
   MessageSquare,
-  CheckCircle2,
-  FileText,
-  Sliders,
   ChevronRight
 } from 'lucide-react';
 import {
@@ -16,8 +13,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
-  Cell
+  ResponsiveContainer
 } from 'recharts';
 import { api } from '../services/api';
 import { Experiment, ComparisonResult } from '../types';
@@ -51,8 +47,7 @@ export const ScientificAnalysis: React.FC = () => {
           setComparison(res);
           setLoading(false);
         })
-        .catch(err => {
-          console.error('Comparison error:', err);
+        .catch(() => {
           setLoading(false);
         });
     }
@@ -63,7 +58,7 @@ export const ScientificAnalysis: React.FC = () => {
 
   const chartData = [
     {
-      parameter: 'Burning Rate K (mm²/s × 10)',
+      parameter: 'Burn Rate K (mm²/s × 10)',
       [expAId]: expA?.burning_rate_constant_k ? expA.burning_rate_constant_k * 10 : 0,
       [expBId]: expB?.burning_rate_constant_k ? expB.burning_rate_constant_k * 10 : 0,
     },
@@ -125,14 +120,12 @@ export const ScientificAnalysis: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-      {/* ── HEADER ──────────────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#E5E5E5]">
+    <div className="page-container space-y-6">
+      {/* ── UNIFIED PAGE HEADER ─────────────────────────────────────────── */}
+      <div className="page-header">
         <div>
-          <h1 className="text-xl sm:text-2xl font-semibold text-[#272727] tracking-tight">
-            Compare Flight Experiments
-          </h1>
-          <p className="text-xs sm:text-[13px] text-[#6B6B6B] mt-0.5">
+          <h1 className="page-title">Compare Flight Experiments</h1>
+          <p className="page-subtitle">
             Differential scientific analysis of droplet combustion kinetics, gravity effects, and extinction modes.
           </p>
         </div>
@@ -145,7 +138,7 @@ export const ScientificAnalysis: React.FC = () => {
               )}`
             );
           }}
-          className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-[#242424] text-white hover:bg-[#383838] rounded-[7px] text-xs font-medium transition-colors"
+          className="btn-primary"
         >
           <MessageSquare className="w-3.5 h-3.5" />
           <span>Ask Copilot to Compare</span>
@@ -155,14 +148,14 @@ export const ScientificAnalysis: React.FC = () => {
       {/* ── SELECTOR PANELS ──────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Experiment A */}
-        <div className="p-4 bg-white border border-[#E5E5E5] rounded-[10px] space-y-2">
-          <label className="text-xs font-semibold text-[#8A8A8A] uppercase tracking-wide block">
+        <div className="p-4 bg-white border border-[#E5E5E5] rounded-[10px] space-y-2 shadow-2xs">
+          <label className="text-xs font-semibold text-[#8F8F8F] uppercase tracking-wide block">
             Experiment A (Primary)
           </label>
           <select
             value={expAId}
             onChange={(e) => setExpAId(e.target.value)}
-            className="w-full px-3 py-2 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px] text-xs font-medium text-[#272727] focus:outline-none focus:ring-1 focus:ring-[#242424]"
+            className="select-standard w-full"
           >
             {availableExperiments.map((e) => (
               <option key={e.experiment_id} value={e.experiment_id}>
@@ -173,14 +166,14 @@ export const ScientificAnalysis: React.FC = () => {
         </div>
 
         {/* Experiment B */}
-        <div className="p-4 bg-white border border-[#E5E5E5] rounded-[10px] space-y-2">
-          <label className="text-xs font-semibold text-[#8A8A8A] uppercase tracking-wide block">
+        <div className="p-4 bg-white border border-[#E5E5E5] rounded-[10px] space-y-2 shadow-2xs">
+          <label className="text-xs font-semibold text-[#8F8F8F] uppercase tracking-wide block">
             Experiment B (Comparative Baseline)
           </label>
           <select
             value={expBId}
             onChange={(e) => setExpBId(e.target.value)}
-            className="w-full px-3 py-2 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px] text-xs font-medium text-[#272727] focus:outline-none focus:ring-1 focus:ring-[#242424]"
+            className="select-standard w-full"
           >
             {availableExperiments.map((e) => (
               <option key={e.experiment_id} value={e.experiment_id}>
@@ -192,33 +185,33 @@ export const ScientificAnalysis: React.FC = () => {
       </div>
 
       {/* ── SIDE-BY-SIDE PARAMETER COMPARISON TABLE ───────────────────────── */}
-      <div className="bg-white border border-[#E5E5E5] rounded-[10px] overflow-hidden shadow-xs">
+      <div className="table-shell shadow-2xs">
         <div className="p-4 border-b border-[#E5E5E5] bg-[#F7F7F8]">
-          <h3 className="text-sm font-semibold text-[#272727]">
+          <h3 className="text-sm font-semibold text-[#0D0D0D]">
             Side-by-Side Parameter Matrix
           </h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-[13px]">
             <thead>
-              <tr className="bg-[#F7F7F8] border-b border-[#E5E5E5] text-[11px] font-medium text-[#8A8A8A] uppercase">
-                <th className="py-2.5 px-4">Parameter</th>
-                <th className="py-2.5 px-4 font-mono font-semibold text-[#272727]">{expAId}</th>
-                <th className="py-2.5 px-4 font-mono font-semibold text-[#272727]">{expBId}</th>
-                <th className="py-2.5 px-4 text-right">Variance</th>
+              <tr>
+                <th className="table-header-cell">Parameter</th>
+                <th className="table-header-cell font-mono font-semibold text-[#0D0D0D]">{expAId}</th>
+                <th className="table-header-cell font-mono font-semibold text-[#0D0D0D]">{expBId}</th>
+                <th className="table-header-cell text-right">Variance</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E5E5E5]">
+            <tbody>
               {parameters.map((p, idx) => (
                 <tr key={idx} className="hover:bg-[#F9F9FA]">
-                  <td className="py-2.5 px-4 font-medium text-[#272727]">{p.label}</td>
-                  <td className={`py-2.5 px-4 ${p.isMono ? 'font-mono text-xs' : ''} ${p.highlight ? 'text-[#B86B39] font-semibold' : 'text-[#555555]'}`}>
+                  <td className="table-body-cell font-medium text-[#0D0D0D]">{p.label}</td>
+                  <td className={`table-body-cell ${p.isMono ? 'font-mono text-xs' : ''} ${p.highlight ? 'text-[#B86B39] font-semibold' : 'text-[#555555]'}`}>
                     {p.valA || '—'}
                   </td>
-                  <td className={`py-2.5 px-4 ${p.isMono ? 'font-mono text-xs' : ''} ${p.highlight ? 'text-[#B86B39] font-semibold' : 'text-[#555555]'}`}>
+                  <td className={`table-body-cell ${p.isMono ? 'font-mono text-xs' : ''} ${p.highlight ? 'text-[#B86B39] font-semibold' : 'text-[#555555]'}`}>
                     {p.valB || '—'}
                   </td>
-                  <td className="py-2.5 px-4 text-right text-xs font-mono text-[#8A8A8A]">
+                  <td className="table-body-cell text-right text-xs font-mono text-[#8F8F8F]">
                     {p.valA === p.valB ? (
                       <span className="text-emerald-600">Identical</span>
                     ) : (
@@ -233,27 +226,27 @@ export const ScientificAnalysis: React.FC = () => {
       </div>
 
       {/* ── VISUAL BAR COMPARISON ────────────────────────────────────────── */}
-      <div className="p-5 bg-white border border-[#E5E5E5] rounded-[10px] space-y-4">
-        <h3 className="text-sm font-semibold text-[#272727]">
+      <div className="p-5 bg-white border border-[#E5E5E5] rounded-[10px] space-y-4 shadow-2xs">
+        <h3 className="text-sm font-semibold text-[#0D0D0D]">
           Normalized Parameter Comparison
         </h3>
         <div className="h-[260px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" />
-              <XAxis dataKey="parameter" stroke="#8A8A8A" fontSize={11} tickLine={false} />
-              <YAxis stroke="#8A8A8A" fontSize={11} tickLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#EBEBEB" />
+              <XAxis dataKey="parameter" stroke="#8F8F8F" fontSize={11} tickLine={false} />
+              <YAxis stroke="#8F8F8F" fontSize={11} tickLine={false} />
               <Tooltip
                 contentStyle={{ backgroundColor: '#FFFFFF', borderColor: '#E5E5E5', borderRadius: '8px', fontSize: '12px' }}
               />
-              <Bar dataKey={expAId} fill="#242424" radius={[4, 4, 0, 0]} />
+              <Bar dataKey={expAId} fill="#0D0D0D" radius={[4, 4, 0, 0]} />
               <Bar dataKey={expBId} fill="#B86B39" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div className="flex items-center justify-center space-x-6 text-xs font-mono text-[#6B6B6B]">
+        <div className="flex items-center justify-center space-x-6 text-xs font-mono text-[#6E6E6E]">
           <div className="flex items-center space-x-1.5">
-            <span className="w-3 h-3 rounded-[3px] bg-[#242424]" />
+            <span className="w-3 h-3 rounded-[3px] bg-[#0D0D0D]" />
             <span>{expAId}</span>
           </div>
           <div className="flex items-center space-x-1.5">
