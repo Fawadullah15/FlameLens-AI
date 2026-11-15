@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import {
   Search,
   Menu,
   X,
-  ChevronRight,
+  PanelLeft,
   Database,
   ExternalLink
 } from 'lucide-react';
@@ -15,83 +15,100 @@ interface NavbarProps {
   onOpenSources: () => void;
   isMobileNavOpen?: boolean;
   onToggleMobileNav?: () => void;
+  isSidebarCollapsed?: boolean;
+  onToggleSidebarCollapse?: () => void;
 }
 
-const ROUTE_LABELS: Record<string, { section: string; title: string }> = {
-  '/': { section: 'Workspace', title: 'Mission Overview' },
-  '/copilot': { section: 'Intelligence', title: 'AI Research Chat' },
-  '/assistant': { section: 'Intelligence', title: 'AI Research Chat' },
-  '/library': { section: 'Literature', title: 'NASA Research Library' },
-  '/experiments': { section: 'Data', title: 'Experiments Repository' },
-  '/combustion': { section: 'Analysis', title: 'Flame Analysis' },
-  '/analysis': { section: 'Analysis', title: 'Compare Experiments' },
-  '/comparison': { section: 'Analysis', title: 'Compare Experiments' },
-  '/safety': { section: 'Safety', title: 'Fire Safety Intelligence' },
-  '/risk': { section: 'Safety', title: 'Fire Safety Intelligence' },
-  '/incidents': { section: 'Safety', title: 'Historical Spacecraft Incidents' },
-  '/reports': { section: 'Findings', title: 'Research Reports' },
-  '/settings': { section: 'Configuration', title: 'System Settings' }
+const ROUTE_TITLES: Record<string, string> = {
+  '/': 'Mission Overview',
+  '/copilot': 'AI Research Chat',
+  '/assistant': 'AI Research Chat',
+  '/library': 'NASA Research Library',
+  '/experiments': 'Experiments Repository',
+  '/combustion': 'Flame & Kinetics Analysis',
+  '/analysis': 'Compare Experiments',
+  '/comparison': 'Compare Experiments',
+  '/safety': 'Fire Safety Intelligence',
+  '/risk': 'Fire Safety Intelligence',
+  '/incidents': 'Historical Incidents',
+  '/reports': 'Research Reports',
+  '/settings': 'Settings'
 };
 
 export const Navbar: React.FC<NavbarProps> = ({
   onOpenSearch,
   onOpenSources,
   isMobileNavOpen = false,
-  onToggleMobileNav
+  onToggleMobileNav,
+  isSidebarCollapsed = false,
+  onToggleSidebarCollapse
 }) => {
   const location = useLocation();
-  const [healthStatus, setHealthStatus] = useState<{ status: string; count: number } | null>(null);
+  const [experimentCount, setExperimentCount] = useState<number>(42);
 
   useEffect(() => {
     api.getHealth()
-      .then(res => setHealthStatus({ status: res.status, count: res.verified_experiments_count }))
-      .catch(() => setHealthStatus(null));
+      .then(res => {
+        if (res?.verified_experiments_count) setExperimentCount(res.verified_experiments_count);
+      })
+      .catch(() => {});
   }, []);
 
-  const routeInfo = ROUTE_LABELS[location.pathname] || { section: 'Workspace', title: 'FlameLens' };
+  const pageTitle = ROUTE_TITLES[location.pathname] || 'FlameLens';
 
   return (
-    <header className="h-[52px] border-b border-[#E5E5E5] bg-white sticky top-0 z-30 px-4 flex items-center justify-between">
-      {/* Left: Mobile Toggle, Logo, Breadcrumbs */}
-      <div className="flex items-center space-x-3">
+    <header className="h-12 border-b border-[#E5E5E5] bg-white sticky top-0 z-30 px-3 sm:px-4 flex items-center justify-between select-none">
+      {/* Left: Sidebar Toggle, Mobile Menu, Breadcrumb */}
+      <div className="flex items-center space-x-2">
+        {/* Mobile menu hamburger */}
         {onToggleMobileNav && (
           <button
             onClick={onToggleMobileNav}
-            className="lg:hidden p-1.5 rounded-md text-[#6B6B6B] hover:text-[#272727] hover:bg-[#F0F0F0] transition-colors"
+            className="lg:hidden p-1.5 rounded-[6px] text-[#6E6E6E] hover:text-[#0D0D0D] hover:bg-[#F0F0F0] transition-colors"
             aria-label="Toggle navigation"
           >
             {isMobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
         )}
 
-        <div className="flex items-center space-x-2 text-[13px]">
-          <span className="text-[#8A8A8A] hidden sm:inline">{routeInfo.section}</span>
-          <ChevronRight className="w-3.5 h-3.5 text-[#CCCCCC] hidden sm:inline" />
-          <span className="font-semibold text-[#272727] tracking-tight">{routeInfo.title}</span>
+        {/* Desktop open sidebar icon when collapsed */}
+        {isSidebarCollapsed && onToggleSidebarCollapse && (
+          <button
+            onClick={onToggleSidebarCollapse}
+            className="hidden lg:flex p-1.5 rounded-[6px] text-[#6E6E6E] hover:text-[#0D0D0D] hover:bg-[#F0F0F0] transition-colors mr-1"
+            title="Open sidebar"
+            aria-label="Open sidebar"
+          >
+            <PanelLeft className="w-4 h-4" />
+          </button>
+        )}
+
+        <div className="text-[13px] font-medium text-[#0D0D0D] flex items-center space-x-2">
+          <span>{pageTitle}</span>
         </div>
       </div>
 
-      {/* Center: Minimal Quick Search Bar */}
-      <div className="flex-1 max-w-md mx-4 hidden md:block">
+      {/* Center: Search Button (ChatGPT style) */}
+      <div className="flex-1 max-w-sm mx-4 hidden md:block">
         <button
           onClick={onOpenSearch}
-          className="w-full flex items-center justify-between px-3 py-1.5 text-[13px] text-[#8A8A8A] bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px] hover:bg-[#EFEFEF] hover:border-[#D4D4D4] transition-colors"
+          className="w-full flex items-center justify-between px-2.5 py-1 text-[13px] text-[#8F8F8F] bg-[#F7F7F8] hover:bg-[#EFEFEF] border border-[#E5E5E5] rounded-[6px] transition-colors"
         >
           <div className="flex items-center space-x-2">
-            <Search className="w-3.5 h-3.5 text-[#8A8A8A]" />
-            <span>Search research papers, fuels, or experiments...</span>
+            <Search className="w-3.5 h-3.5 text-[#8F8F8F]" />
+            <span>Search research, fuels, papers...</span>
           </div>
-          <kbd className="text-[10px] font-mono text-[#8A8A8A] border border-[#E5E5E5] px-1 py-0.2 rounded bg-white">
+          <kbd className="text-[10px] font-mono text-[#8F8F8F] bg-white px-1 py-0.2 rounded border border-[#E5E5E5]">
             Ctrl+K
           </kbd>
         </button>
       </div>
 
-      {/* Right: Status Pill & QuantumX profile badge */}
-      <div className="flex items-center space-x-2.5">
+      {/* Right: Datasets indicator & Search on mobile */}
+      <div className="flex items-center space-x-2">
         <button
           onClick={onOpenSearch}
-          className="md:hidden p-1.5 rounded-md text-[#6B6B6B] hover:text-[#272727] hover:bg-[#F0F0F0]"
+          className="md:hidden p-1.5 rounded-[6px] text-[#6E6E6E] hover:text-[#0D0D0D] hover:bg-[#F0F0F0]"
           aria-label="Search"
         >
           <Search className="w-4 h-4" />
@@ -99,18 +116,11 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         <button
           onClick={onOpenSources}
-          className="hidden sm:flex items-center space-x-1.5 px-2.5 py-1 text-[11px] font-medium text-[#6B6B6B] bg-[#F7F7F8] hover:bg-[#EFEFEF] border border-[#E5E5E5] rounded-[6px] transition-colors"
+          className="flex items-center space-x-1.5 px-2.5 py-1 text-[11px] font-medium text-[#555555] hover:text-[#0D0D0D] bg-[#F7F7F8] hover:bg-[#EFEFEF] border border-[#E5E5E5] rounded-[6px] transition-colors"
         >
-          <Database className="w-3 h-3 text-[#6B6B6B]" />
-          <span>{healthStatus?.count ? `${healthStatus.count} Experiments` : 'NASA Datasets'}</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-[#10A37F]" />
+          <span>{experimentCount} NASA Experiments</span>
         </button>
-
-        {/* Team QuantumX profile tag */}
-        <div className="flex items-center space-x-2 pl-1 border-l border-[#E5E5E5]/80">
-          <div className="w-7 h-7 rounded-full bg-[#F0F0F0] border border-[#E5E5E5] flex items-center justify-center text-[11px] font-semibold text-[#272727]">
-            QX
-          </div>
-        </div>
       </div>
     </header>
   );

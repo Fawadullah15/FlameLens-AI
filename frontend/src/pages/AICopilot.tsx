@@ -12,8 +12,7 @@ import {
   Sparkles,
   Flame,
   BarChart2,
-  Paperclip,
-  Share2
+  Paperclip
 } from 'lucide-react';
 import { api } from '../services/api';
 import { ChatMessage, CitationRef, AIMode, StreamMetadata } from '../types';
@@ -62,15 +61,14 @@ const STARTER_PROMPTS: Record<AIMode, string[]> = {
 
 // Clean Markdown Formatter for Scientific Content
 const FormattedMessage: React.FC<{ content: string; onCitationClick?: (cite: string) => void }> = ({
-  content,
-  onCitationClick
+  content
 }) => {
   if (!content) return null;
 
   const blocks = content.split('\n\n');
 
   return (
-    <div className="space-y-3.5 text-[14px] leading-relaxed text-[#272727]">
+    <div className="space-y-3.5 text-[15px] leading-[1.65] text-[#1A1A1A]">
       {blocks.map((block, idx) => {
         const trimmed = block.trim();
 
@@ -86,7 +84,7 @@ const FormattedMessage: React.FC<{ content: string; onCitationClick?: (cite: str
                 <thead className="bg-[#F7F7F8] border-b border-[#E5E5E5]">
                   <tr>
                     {headerCells.map((h, i) => (
-                      <th key={i} className="py-2 px-3 font-semibold text-[#272727]">
+                      <th key={i} className="py-2.5 px-3 font-semibold text-[#0D0D0D]">
                         {h}
                       </th>
                     ))}
@@ -99,7 +97,7 @@ const FormattedMessage: React.FC<{ content: string; onCitationClick?: (cite: str
                     return (
                       <tr key={rIdx} className="hover:bg-[#F9F9FA]">
                         {cells.map((cell, cIdx) => (
-                          <td key={cIdx} className="py-2 px-3 text-[#555555]">
+                          <td key={cIdx} className="py-2.5 px-3 text-[#333333]">
                             {cell}
                           </td>
                         ))}
@@ -115,14 +113,14 @@ const FormattedMessage: React.FC<{ content: string; onCitationClick?: (cite: str
         // 2. Headings
         if (trimmed.startsWith('### ')) {
           return (
-            <h3 key={idx} className="text-[15px] font-semibold text-[#272727] pt-2">
+            <h3 key={idx} className="text-[16px] font-semibold text-[#0D0D0D] pt-2">
               {trimmed.replace('### ', '')}
             </h3>
           );
         }
         if (trimmed.startsWith('## ')) {
           return (
-            <h2 key={idx} className="text-[16px] font-semibold text-[#272727] pt-3">
+            <h2 key={idx} className="text-[17px] font-semibold text-[#0D0D0D] pt-3">
               {trimmed.replace('## ', '')}
             </h2>
           );
@@ -132,9 +130,9 @@ const FormattedMessage: React.FC<{ content: string; onCitationClick?: (cite: str
         if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
           const items = trimmed.split('\n').filter(Boolean);
           return (
-            <ul key={idx} className="space-y-1.5 pl-4 list-disc marker:text-[#8A8A8A]">
+            <ul key={idx} className="space-y-1.5 pl-4 list-disc marker:text-[#8F8F8F]">
               {items.map((item, i) => (
-                <li key={i} className="text-[#333333]">
+                <li key={i} className="text-[#2D2D2D]">
                   <span dangerouslySetInnerHTML={{ __html: renderInline(item.replace(/^[-*]\s+/, '')) }} />
                 </li>
               ))}
@@ -146,9 +144,9 @@ const FormattedMessage: React.FC<{ content: string; onCitationClick?: (cite: str
         if (/^\d+\.\s/.test(trimmed)) {
           const items = trimmed.split('\n').filter(Boolean);
           return (
-            <ol key={idx} className="space-y-1.5 pl-4 list-decimal marker:text-[#8A8A8A]">
+            <ol key={idx} className="space-y-1.5 pl-4 list-decimal marker:text-[#8F8F8F]">
               {items.map((item, i) => (
-                <li key={i} className="text-[#333333]">
+                <li key={i} className="text-[#2D2D2D]">
                   <span dangerouslySetInnerHTML={{ __html: renderInline(item.replace(/^\d+\.\s+/, '')) }} />
                 </li>
               ))}
@@ -160,7 +158,7 @@ const FormattedMessage: React.FC<{ content: string; onCitationClick?: (cite: str
         if (trimmed.startsWith('```')) {
           const code = trimmed.replace(/^```[a-z]*\n?/, '').replace(/\n?```$/, '');
           return (
-            <pre key={idx} className="p-3 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px] font-mono text-xs overflow-x-auto text-[#272727]">
+            <pre key={idx} className="p-3 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px] font-mono text-xs overflow-x-auto text-[#0D0D0D]">
               <code>{code}</code>
             </pre>
           );
@@ -177,10 +175,10 @@ const FormattedMessage: React.FC<{ content: string; onCitationClick?: (cite: str
 
 function renderInline(text: string): string {
   return text
-    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-[#272727]">$1</strong>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-[#0D0D0D]">$1</strong>')
     .replace(/\*(.*?)\*/g, '<em class="italic text-[#333333]">$1</em>')
-    .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-[#F4F4F4] text-[#272727] font-mono text-[12px]">$1</code>')
-    .replace(/\[(\d+)\]/g, '<span class="inline-flex items-center px-1 py-0.2 mx-0.5 text-[11px] font-mono font-medium rounded bg-[#F8F1EC] text-[#B86B39] border border-[#EBDAD0]">[$1]</span>')
+    .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-[#F4F4F4] text-[#0D0D0D] font-mono text-[12px]">$1</code>')
+    .replace(/\[(\d+)\]/g, '<span class="inline-flex items-center px-1.5 py-0.2 mx-0.5 text-[11px] font-mono font-medium rounded bg-[#F8F1EC] text-[#B86B39] border border-[#EBDAD0]">[$1]</span>')
     .replace(/d\^2/g, 'd²')
     .replace(/d0\^2/g, 'd₀²');
 }
@@ -345,8 +343,8 @@ export const AICopilot: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-white relative">
       {/* ── TOP MODE SELECTION BAR ────────────────────────────────────── */}
-      <div className="border-b border-[#E5E5E5] px-4 py-2 flex items-center justify-between bg-white z-10 shrink-0">
-        <div className="flex items-center space-x-1.5">
+      <div className="border-b border-[#EBEBEB] px-4 py-2 flex items-center justify-between bg-white z-10 shrink-0">
+        <div className="flex items-center space-x-1">
           {MODES.map((m) => {
             const Icon = m.icon;
             const isSelected = activeMode === m.id;
@@ -354,10 +352,10 @@ export const AICopilot: React.FC = () => {
               <button
                 key={m.id}
                 onClick={() => setActiveMode(m.id)}
-                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-[7px] text-[12px] font-medium transition-colors ${
+                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-[8px] text-[13px] font-medium transition-colors ${
                   isSelected
-                    ? 'bg-[#F0F0F0] text-[#272727]'
-                    : 'text-[#6B6B6B] hover:text-[#272727] hover:bg-[#F7F7F8]'
+                    ? 'bg-[#EAEAEA] text-[#0D0D0D]'
+                    : 'text-[#666666] hover:text-[#0D0D0D] hover:bg-[#F4F4F4]'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -367,7 +365,7 @@ export const AICopilot: React.FC = () => {
           })}
         </div>
 
-        <div className="flex items-center space-x-2 text-xs text-[#8A8A8A]">
+        <div className="flex items-center space-x-2 text-xs text-[#8F8F8F]">
           <span className="hidden sm:inline font-mono text-[11px]">NASA RAG Grounding</span>
           {messages.length > 0 && (
             <button
@@ -376,7 +374,7 @@ export const AICopilot: React.FC = () => {
                 setMessages([]);
                 setSessionId(`SES-${Date.now().toString(36).toUpperCase()}`);
               }}
-              className="p-1 rounded hover:bg-[#F0F0F0] text-[#6B6B6B] hover:text-[#272727] transition-colors"
+              className="p-1 rounded hover:bg-[#F0F0F0] text-[#6E6E6E] hover:text-[#0D0D0D] transition-colors"
               title="Reset conversation"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -387,33 +385,29 @@ export const AICopilot: React.FC = () => {
 
       {/* ── CONVERSATION THREAD AREA ───────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto px-4 py-6">
-        <div className="max-w-3xl mx-auto w-full">
+        <div className="max-w-[768px] mx-auto w-full">
           {messages.length === 0 ? (
             /* Empty State: ChatGPT Style Welcome */
-            <div className="py-16 sm:py-24 text-center space-y-8">
-              <div className="w-10 h-10 mx-auto rounded-full bg-[#242424] text-white flex items-center justify-center font-bold text-sm">
-                <span className="text-[#FF7139]">F</span>L
-              </div>
-
+            <div className="py-20 sm:py-28 text-center space-y-8">
               <div className="space-y-2 max-w-lg mx-auto">
-                <h2 className="text-2xl font-semibold text-[#272727]">
-                  What would you like to understand?
+                <h2 className="text-2xl sm:text-3xl font-semibold text-[#0D0D0D] tracking-tight">
+                  What would you like to investigate?
                 </h2>
-                <p className="text-xs text-[#6B6B6B] leading-relaxed">
+                <p className="text-[14px] text-[#6E6E6E] leading-relaxed">
                   Ask about NASA microgravity combustion kinetics, droplet extinction limits, spherical flame geometry, or spacecraft fire safety.
                 </p>
               </div>
 
               {/* Starter Question Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-2xl mx-auto text-left pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-xl mx-auto text-left pt-2">
                 {STARTER_PROMPTS[activeMode].map((prompt, i) => (
                   <button
                     key={i}
                     onClick={() => handleSendMessage(prompt)}
-                    className="p-3 bg-white border border-[#E5E5E5] hover:border-[#D4D4D4] hover:bg-[#F9F9FA] rounded-[9px] text-xs text-[#444444] transition-colors leading-snug flex flex-col justify-between"
+                    className="p-3.5 bg-white border border-[#E5E5E5] hover:border-[#CCCCCC] hover:bg-[#F9F9FA] rounded-[10px] text-[13px] text-[#333333] transition-colors leading-snug flex flex-col justify-between shadow-2xs"
                   >
                     <span>{prompt}</span>
-                    <span className="text-[10px] text-[#8A8A8A] font-mono mt-2">NASA Open Data</span>
+                    <span className="text-[11px] text-[#8F8F8F] font-mono mt-2">NASA PSI Data</span>
                   </button>
                 ))}
               </div>
@@ -428,7 +422,7 @@ export const AICopilot: React.FC = () => {
                     {isUser ? (
                       /* User message: clean light grey bubble aligned right */
                       <div className="flex justify-end">
-                        <div className="max-w-[85%] bg-[#F4F4F4] text-[#272727] rounded-[18px] px-4 py-2.5 text-[14px] leading-relaxed">
+                        <div className="max-w-[80%] bg-[#F4F4F4] text-[#0D0D0D] rounded-[20px] px-4 py-2.5 text-[14px] leading-relaxed">
                           {msg.content}
                         </div>
                       </div>
@@ -436,18 +430,18 @@ export const AICopilot: React.FC = () => {
                       /* Assistant message: clean typography directly on white */
                       <div className="space-y-3 pt-2">
                         <div className="flex items-center space-x-2">
-                          <div className="w-5 h-5 rounded-[4px] bg-[#242424] text-white flex items-center justify-center font-bold text-[10px]">
+                          <div className="w-5 h-5 rounded-[4px] bg-[#0D0D0D] text-white flex items-center justify-center font-bold text-[10px]">
                             FL
                           </div>
-                          <span className="text-xs font-semibold text-[#272727]">FlameLens Intelligence</span>
-                          <span className="text-[11px] font-mono text-[#8A8A8A]">{msg.timestamp}</span>
+                          <span className="text-xs font-semibold text-[#0D0D0D]">FlameLens Intelligence</span>
+                          <span className="text-[11px] font-mono text-[#8F8F8F]">{msg.timestamp}</span>
                         </div>
 
                         <div className="pl-7">
                           {msg.content ? (
                             <FormattedMessage content={msg.content} />
                           ) : (
-                            <div className="flex items-center space-x-1.5 py-2 text-xs text-[#8A8A8A]">
+                            <div className="flex items-center space-x-1.5 py-2 text-xs text-[#8F8F8F]">
                               <span className="w-1.5 h-1.5 rounded-full bg-[#B86B39] animate-pulse" />
                               <span>Searching NASA technical archives & synthesizing...</span>
                             </div>
@@ -455,10 +449,10 @@ export const AICopilot: React.FC = () => {
 
                           {/* Action Bar (Copy, Sources, Citations) */}
                           {msg.status !== 'streaming' && msg.content && (
-                            <div className="pt-3 flex flex-wrap items-center gap-3 text-xs text-[#8A8A8A]">
+                            <div className="pt-3 flex flex-wrap items-center gap-3 text-xs text-[#8F8F8F]">
                               <button
                                 onClick={() => handleCopy(msg.content, msg.id)}
-                                className="inline-flex items-center space-x-1 hover:text-[#272727] transition-colors"
+                                className="inline-flex items-center space-x-1 hover:text-[#0D0D0D] transition-colors"
                               >
                                 {copiedId === msg.id ? (
                                   <>
@@ -495,7 +489,7 @@ export const AICopilot: React.FC = () => {
                           {/* Expanded Sources Panel */}
                           {expandedSourcesId === msg.id && msg.sources && (
                             <div className="mt-3 p-3 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px] space-y-2">
-                              <div className="text-[11px] font-semibold text-[#6B6B6B] uppercase tracking-wide">
+                              <div className="text-[11px] font-semibold text-[#6E6E6E] uppercase tracking-wide">
                                 Verified References Grounding This Answer
                               </div>
                               <div className="space-y-1.5">
@@ -508,14 +502,14 @@ export const AICopilot: React.FC = () => {
                                       <span className="font-mono text-[10px] font-semibold text-[#B86B39] mr-2">
                                         [{idx + 1}] {src.source_id}
                                       </span>
-                                      <span className="font-medium text-[#272727]">{src.title}</span>
+                                      <span className="font-medium text-[#0D0D0D]">{src.title}</span>
                                     </div>
                                     {src.url && (
                                       <a
                                         href={src.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-[#6B6B6B] hover:text-[#272727] shrink-0 ml-2"
+                                        className="text-[#6E6E6E] hover:text-[#0D0D0D] shrink-0 ml-2"
                                       >
                                         <ExternalLink className="w-3.5 h-3.5" />
                                       </a>
@@ -538,9 +532,9 @@ export const AICopilot: React.FC = () => {
       </div>
 
       {/* ── STICKY CENTERED INPUT COMPOSER ─────────────────────────────── */}
-      <div className="sticky bottom-0 bg-white/95 backdrop-blur-xs border-t border-[#E5E5E5]/60 pt-2 pb-4 px-4 z-20">
-        <div className="max-w-3xl mx-auto w-full">
-          <div className="relative flex items-end bg-white border border-[#E5E5E5] rounded-[18px] shadow-xs focus-within:border-[#242424] focus-within:ring-1 focus-within:ring-[#242424] transition-all p-2">
+      <div className="sticky bottom-0 bg-gradient-to-t from-white via-white/95 to-transparent pt-4 pb-4 px-4 z-20">
+        <div className="max-w-[768px] mx-auto w-full">
+          <div className="relative flex items-end bg-white border border-[#E5E5E5] rounded-[24px] shadow-sm focus-within:border-[#0D0D0D] focus-within:ring-1 focus-within:ring-[#0D0D0D] transition-all p-2">
             <textarea
               ref={textareaRef}
               rows={1}
@@ -548,7 +542,7 @@ export const AICopilot: React.FC = () => {
               onChange={handleTextareaInput}
               onKeyDown={handleKeyDown}
               placeholder={MODES.find(m => m.id === activeMode)?.placeholder || 'Ask a research question...'}
-              className="flex-1 bg-transparent border-none text-[14px] text-[#272727] placeholder:text-[#8A8A8A] focus:outline-none resize-none px-2 py-1 max-h-44 leading-relaxed"
+              className="flex-1 bg-transparent border-none text-[14px] text-[#0D0D0D] placeholder:text-[#8F8F8F] focus:outline-none resize-none px-3 py-1.5 max-h-44 leading-relaxed"
             />
 
             <div className="flex items-center space-x-1 shrink-0 pb-0.5">
@@ -556,7 +550,7 @@ export const AICopilot: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleStopStream}
-                  className="p-2 rounded-full bg-[#242424] text-white hover:bg-[#383838] transition-colors"
+                  className="p-2 rounded-full bg-[#0D0D0D] text-white hover:bg-[#333333] transition-colors"
                   aria-label="Stop generation"
                 >
                   <Square className="w-3.5 h-3.5 fill-current" />
@@ -566,7 +560,7 @@ export const AICopilot: React.FC = () => {
                   type="button"
                   onClick={() => handleSendMessage()}
                   disabled={!input.trim()}
-                  className="p-2 rounded-full bg-[#242424] text-white hover:bg-[#383838] disabled:opacity-30 disabled:hover:bg-[#242424] transition-colors"
+                  className="p-2 rounded-full bg-[#0D0D0D] text-white hover:bg-[#333333] disabled:opacity-20 disabled:hover:bg-[#0D0D0D] transition-colors"
                   aria-label="Send message"
                 >
                   <ArrowUp className="w-4 h-4" />
@@ -576,8 +570,8 @@ export const AICopilot: React.FC = () => {
           </div>
 
           <div className="text-center pt-2">
-            <span className="text-[11px] text-[#8A8A8A]">
-              FlameLens AI answers are grounded in NASA Glenn Research Center and Physical Sciences Informatics data.
+            <span className="text-[12px] text-[#8F8F8F]">
+              FlameLens AI responses are derived from NASA Technical Reports and Physical Sciences Informatics.
             </span>
           </div>
         </div>
