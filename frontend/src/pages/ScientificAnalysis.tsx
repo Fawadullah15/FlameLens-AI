@@ -26,6 +26,7 @@ import {
 } from 'recharts';
 import { api } from '../services/api';
 import { Experiment, ComparisonResult } from '../types';
+import { STATIC_EXPERIMENTS } from '../data/staticData';
 
 const COLORS = ['#22D3EE', '#36D399', '#F5B942', '#FF7139'];
 
@@ -34,7 +35,7 @@ export const ScientificAnalysis: React.FC = () => {
   const navigate = useNavigate();
   const exp1Param = searchParams.get('exp1');
 
-  const [availableExperiments, setAvailableExperiments] = useState<Experiment[]>([]);
+  const [availableExperiments, setAvailableExperiments] = useState<Experiment[]>(STATIC_EXPERIMENTS as Experiment[]);
   const [selectedIds, setSelectedIds] = useState<string[]>(['FLEX-001', 'FLEX-002', 'CFI-001']);
   const [comparison, setComparison] = useState<ComparisonResult | null>(null);
   const [loading, setLoading] = useState(false);

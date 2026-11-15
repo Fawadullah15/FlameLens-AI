@@ -19,16 +19,17 @@ import {
 } from 'lucide-react';
 import { api } from '../services/api';
 import { ResearchDocument, LibraryTaxonomy } from '../types';
+import { STATIC_DOCUMENTS } from '../data/staticData';
 
 export const ResearchExplorer: React.FC = () => {
   const [searchParams] = useSearchParams();
   const initialDocId = searchParams.get('doc');
 
-  const [papers, setPapers] = useState<ResearchDocument[]>([]);
-  const [selectedPaper, setSelectedPaper] = useState<ResearchDocument | null>(null);
+  const [papers, setPapers] = useState<ResearchDocument[]>(STATIC_DOCUMENTS as ResearchDocument[]);
+  const [selectedPaper, setSelectedPaper] = useState<ResearchDocument | null>((STATIC_DOCUMENTS[0] as ResearchDocument) || null);
   const [selectedDetail, setSelectedDetail] = useState<any | null>(null);
   const [taxonomy, setTaxonomy] = useState<LibraryTaxonomy | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
 
   // Filters

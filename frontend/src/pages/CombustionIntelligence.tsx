@@ -43,6 +43,7 @@ import {
   AtmosphereScenario,
   AtmosphereSimulationResult
 } from '../types';
+import { STATIC_EXPERIMENTS, STATIC_ATMOSPHERE_SCENARIOS } from '../data/staticData';
 
 export const CombustionIntelligence: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -52,12 +53,12 @@ export const CombustionIntelligence: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'kinetics' | 'atmosphere' | 'explorer'>('kinetics');
 
   // Experiments Explorer State
-  const [experiments, setExperiments] = useState<Experiment[]>([]);
-  const [selectedExp, setSelectedExp] = useState<Experiment | null>(null);
+  const [experiments, setExperiments] = useState<Experiment[]>(STATIC_EXPERIMENTS as Experiment[]);
+  const [selectedExp, setSelectedExp] = useState<Experiment | null>((STATIC_EXPERIMENTS[0] as Experiment) || null);
   const [seriesFilter, setSeriesFilter] = useState<string>('');
   const [fuelFilter, setFuelFilter] = useState<string>('');
   const [gravityFilter, setGravityFilter] = useState<string>('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // D² Kinetics Regression State
   const [d2SeriesList, setD2SeriesList] = useState<D2SeriesInfo[]>([]);
@@ -68,7 +69,7 @@ export const CombustionIntelligence: React.FC = () => {
   // Atmospheric Simulator State
   const [o2Pct, setO2Pct] = useState<number>(21.0);
   const [pressureKpa, setPressureKpa] = useState<number>(101.3);
-  const [presets, setPresets] = useState<AtmosphereScenario[]>([]);
+  const [presets, setPresets] = useState<AtmosphereScenario[]>(STATIC_ATMOSPHERE_SCENARIOS as AtmosphereScenario[]);
   const [simResult, setSimResult] = useState<AtmosphereSimulationResult | null>(null);
   const [simLoading, setSimLoading] = useState(false);
 

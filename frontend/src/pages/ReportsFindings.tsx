@@ -16,9 +16,10 @@ import {
 } from 'lucide-react';
 import { api } from '../services/api';
 import { Experiment } from '../types';
+import { STATIC_EXPERIMENTS } from '../data/staticData';
 
 export const ReportsFindings: React.FC = () => {
-  const [experiments, setExperiments] = useState<Experiment[]>([]);
+  const [experiments, setExperiments] = useState<Experiment[]>(STATIC_EXPERIMENTS as Experiment[]);
   const [selectedIds, setSelectedIds] = useState<string[]>(['FLEX-001', 'CFI-001', 'ACME-001']);
   const [reportTitle, setReportTitle] = useState('FlameLens AI Fire Safety & Combustion Mission Briefing');
   const [includeRisk, setIncludeRisk] = useState(true);

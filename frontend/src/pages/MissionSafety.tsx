@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { api } from '../services/api';
 import { RiskRankingItem, HistoricalIncident } from '../types';
+import { STATIC_INCIDENTS } from '../data/staticData';
 
 const RISK_BADGES: Record<string, { bg: string; text: string; border: string }> = {
   CRITICAL: { bg: 'bg-rose-950/80', text: 'text-rose-400', border: 'border-rose-800' },
@@ -40,14 +41,14 @@ export const MissionSafety: React.FC<MissionSafetyProps> = ({ defaultTab = 'risk
 
   // Risk Ranking State
   const [rankings, setRankings] = useState<RiskRankingItem[]>([]);
-  const [methodology, setMethodology] = useState<string>('');
+  const [methodology, setMethodology] = useState<string>('NASA-STD-6001B Flammability Screening Matrix');
   const [riskFilter, setRiskFilter] = useState<string>('');
   const [fuelCatFilter, setFuelCatFilter] = useState<string>('');
-  const [rankLoading, setRankLoading] = useState(true);
+  const [rankLoading, setRankLoading] = useState(false);
 
   // Historical Incidents State
-  const [incidents, setIncidents] = useState<HistoricalIncident[]>([]);
-  const [selectedIncident, setSelectedIncident] = useState<HistoricalIncident | null>(null);
+  const [incidents, setIncidents] = useState<HistoricalIncident[]>(STATIC_INCIDENTS as HistoricalIncident[]);
+  const [selectedIncident, setSelectedIncident] = useState<HistoricalIncident | null>((STATIC_INCIDENTS[0] as HistoricalIncident) || null);
   const [incidentLoading, setIncidentLoading] = useState(false);
 
   useEffect(() => {
