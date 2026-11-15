@@ -1,287 +1,115 @@
 @import "tailwindcss";
 
 @theme {
-  /* NASA Mission Control Palette */
-  --color-space-950: #05090D; /* Main background */
-  --color-space-900: #0A1118; /* Secondary background */
-  --color-space-850: #0E1821; /* Panel background */
-  --color-space-800: #13212C; /* Elevated surface */
-  --color-space-750: #172836; /* Hover surface */
-  --color-space-700: #1E3442; /* Primary borders */
-  --color-space-600: #2C485A; /* Accent borders */
+  /* Ultra-Clean NASA Aerospace Palette */
+  --color-space-950: #060A10; /* Deep Obsidian Void */
+  --color-space-900: #090F16; /* Mission Background */
+  --color-space-850: #0D1622; /* Aerospace Panel */
+  --color-space-800: #121D2C; /* Elevated Surface */
+  --color-space-750: #182638; /* Hover Surface */
+  --color-space-700: #1B2B3C; /* Crisp 1px Border */
+  --color-space-600: #253A50; /* Subtle Highlight Border */
 
-  --color-cyan-400: #22D3EE;  /* Primary cyan */
-  --color-cyan-500: #06B6D4;
-  --color-cyan-600: #0891B2;  /* Secondary cyan */
-  --color-flame-400: #FF8552;
-  --color-flame-500: #FF7139; /* Flame orange */
-  --color-flame-600: #E65A20;
-  --color-amber-400: #F5B942; /* Warning amber */
-  --color-emerald-400: #36D399; /* Success green */
-  --color-purple-400: #C084FC;
-  --color-purple-500: #A855F7;
+  --color-cyan-400: #38BDF8;  /* Technical Sky Cyan */
+  --color-cyan-500: #0EA5E9;
+  --color-cyan-600: #0284C7;
+  
+  --color-flame-400: #FB923C;
+  --color-flame-500: #F97316; /* Clean Aerospace Orange */
+  
+  --color-amber-400: #FBBF24; /* Alert Amber */
+  --color-emerald-400: #34D399; /* Systems Nominal Green */
+  --color-rose-400: #F43F5E; /* Critical Warning Red */
 
-  --color-slate-100: #F1F5F9; /* Primary text */
-  --color-slate-400: #94A3B8; /* Secondary text */
+  --color-slate-100: #F8FAFC; /* Crisp Primary Text */
+  --color-slate-300: #CBD5E1;
+  --color-slate-400: #94A3B8; /* Technical Secondary Text */
+  --color-slate-500: #64748B;
 
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --font-display: 'Space Grotesk', system-ui, sans-serif;
-
-  --shadow-glow-cyan: 0 0 25px -4px rgba(34, 211, 238, 0.4);
-  --shadow-glow-teal: 0 0 25px -4px rgba(54, 211, 153, 0.4);
-  --shadow-glow-flame: 0 0 25px -4px rgba(255, 113, 57, 0.45);
-  --shadow-glow-amber: 0 0 25px -4px rgba(245, 185, 66, 0.4);
-  --shadow-glow-purple: 0 0 25px -4px rgba(168, 85, 247, 0.45);
-  --shadow-glow-danger: 0 0 25px -4px rgba(239, 68, 68, 0.4);
 }
 
 @layer base {
   body {
-    background-color: #05090D;
-    color: #F1F5F9;
+    background-color: #060A10;
+    color: #F8FAFC;
     font-family: 'Inter', system-ui, sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
   }
 }
 
-/* Aerospace Technical Grid & Scanlines */
+/* Subtle Technical Grid Overlay */
 .nasa-grid {
   background-size: 32px 32px;
   background-image: 
-    linear-gradient(to right, rgba(30, 52, 66, 0.3) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(30, 52, 66, 0.3) 1px, transparent 1px);
+    linear-gradient(to right, rgba(27, 43, 60, 0.25) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(27, 43, 60, 0.25) 1px, transparent 1px);
 }
 
-.nasa-dot-grid {
-  background-size: 24px 24px;
-  background-image: radial-gradient(rgba(34, 211, 238, 0.15) 1px, transparent 1px);
+/* Crisp Aerospace Panels (Refined, no harsh neon) */
+.mission-card {
+  background: #090F16;
+  border: 1px solid #1B2B3C;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
 }
 
-/* High-Tech Aerospace Panels */
+.mission-card-elevated {
+  background: #0D1622;
+  border: 1px solid #1B2B3C;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.4);
+}
+
 .mission-panel {
-  background: linear-gradient(180deg, #0E1821 0%, #0A1118 100%);
-  border: 1px solid #1E3442;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 20px -2px rgba(5, 9, 13, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  background: #090F16;
+  border: 1px solid #1B2B3C;
+  border-radius: 0.5rem;
 }
 
 .mission-panel-elevated {
-  background: linear-gradient(180deg, #13212C 0%, #0E1821 100%);
-  border: 1px solid #1E3442;
-  border-radius: 0.75rem;
-  box-shadow: 0 8px 30px -4px rgba(5, 9, 13, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background: #0D1622;
+  border: 1px solid #1B2B3C;
+  border-radius: 0.5rem;
 }
 
-.mission-panel-active {
-  background: linear-gradient(180deg, #13212C 0%, #0E1821 100%);
-  border: 1px solid #22D3EE;
-  box-shadow: 0 0 20px -2px rgba(34, 211, 238, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  border-radius: 0.75rem;
-}
-
-.nasa-card {
-  background: linear-gradient(180deg, #0E1821 0%, #0A1118 100%);
-  border: 1px solid #1E3442;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 16px -2px rgba(5, 9, 13, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.nasa-card-active {
-  background: linear-gradient(180deg, #13212C 0%, #0E1821 100%);
-  border: 1px solid #22D3EE;
-  box-shadow: 0 0 20px -3px rgba(34, 211, 238, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  border-radius: 0.75rem;
-}
-
-/* Reference UI Cards with Radial Color Illumination (From Master Spec Image) */
-.card-radial-amber {
-  background: radial-gradient(140% 120% at 15% 15%, rgba(245, 185, 66, 0.16) 0%, rgba(14, 24, 33, 0.96) 65%);
-  border: 1px solid rgba(245, 185, 66, 0.35);
-  box-shadow: 0 0 24px -6px rgba(245, 185, 66, 0.2), inset 0 1px 0 rgba(245, 185, 66, 0.2);
-  border-radius: 0.75rem;
-}
-
-.card-radial-flame {
-  background: radial-gradient(140% 120% at 15% 15%, rgba(255, 113, 57, 0.16) 0%, rgba(14, 24, 33, 0.96) 65%);
-  border: 1px solid rgba(255, 113, 57, 0.35);
-  box-shadow: 0 0 24px -6px rgba(255, 113, 57, 0.25), inset 0 1px 0 rgba(255, 113, 57, 0.2);
-  border-radius: 0.75rem;
-}
-
-.card-radial-cyan {
-  background: radial-gradient(140% 120% at 15% 15%, rgba(34, 211, 238, 0.16) 0%, rgba(14, 24, 33, 0.96) 65%);
-  border: 1px solid rgba(34, 211, 238, 0.35);
-  box-shadow: 0 0 24px -6px rgba(34, 211, 238, 0.2), inset 0 1px 0 rgba(34, 211, 238, 0.2);
-  border-radius: 0.75rem;
-}
-
-.card-radial-purple {
-  background: radial-gradient(140% 120% at 15% 15%, rgba(168, 85, 247, 0.18) 0%, rgba(14, 24, 33, 0.96) 65%);
-  border: 1px solid rgba(168, 85, 247, 0.35);
-  box-shadow: 0 0 24px -6px rgba(168, 85, 247, 0.25), inset 0 1px 0 rgba(168, 85, 247, 0.2);
-  border-radius: 0.75rem;
-}
-
-.card-radial-emerald {
-  background: radial-gradient(140% 120% at 15% 15%, rgba(54, 211, 153, 0.16) 0%, rgba(14, 24, 33, 0.96) 65%);
-  border: 1px solid rgba(54, 211, 153, 0.35);
-  box-shadow: 0 0 24px -6px rgba(54, 211, 153, 0.2), inset 0 1px 0 rgba(54, 211, 153, 0.2);
-  border-radius: 0.75rem;
-}
-
-.card-radial-crimson {
-  background: radial-gradient(140% 120% at 15% 15%, rgba(239, 68, 68, 0.18) 0%, rgba(14, 24, 33, 0.96) 65%);
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  box-shadow: 0 0 24px -6px rgba(239, 68, 68, 0.2), inset 0 1px 0 rgba(239, 68, 68, 0.2);
-  border-radius: 0.75rem;
-}
-
-/* Glowing Interactive Buttons */
-.btn-glow-flame {
-  background: linear-gradient(135deg, #FF7139 0%, #D9480F 100%);
-  box-shadow: 0 0 24px rgba(255, 113, 57, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  border: 1px solid #FF8552;
-  color: #FFFFFF;
-  transition: all 0.2s ease-in-out;
-}
-.btn-glow-flame:hover {
-  background: linear-gradient(135deg, #FF8552 0%, #EA580C 100%);
-  box-shadow: 0 0 30px rgba(255, 113, 57, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  transform: translateY(-1px);
-}
-
-.btn-glow-cyan {
-  background: linear-gradient(135deg, #22D3EE 0%, #0891B2 100%);
-  box-shadow: 0 0 24px rgba(34, 211, 238, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  border: 1px solid #67E8F9;
-  color: #05090D;
-  font-weight: 600;
-  transition: all 0.2s ease-in-out;
-}
-.btn-glow-cyan:hover {
-  background: linear-gradient(135deg, #67E8F9 0%, #06B6D4 100%);
-  box-shadow: 0 0 30px rgba(34, 211, 238, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  transform: translateY(-1px);
-}
-
-.btn-glow-purple {
-  background: linear-gradient(135deg, #A855F7 0%, #7E22CE 100%);
-  box-shadow: 0 0 24px rgba(168, 85, 247, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  border: 1px solid #C084FC;
-  color: #FFFFFF;
-  transition: all 0.2s ease-in-out;
-}
-.btn-glow-purple:hover {
-  background: linear-gradient(135deg, #C084FC 0%, #9333EA 100%);
-  box-shadow: 0 0 30px rgba(168, 85, 247, 0.65);
-  transform: translateY(-1px);
-}
-
-.btn-outline-flame {
-  background: rgba(14, 24, 33, 0.85);
-  border: 1px solid rgba(255, 113, 57, 0.6);
-  color: #FF8552;
-  box-shadow: 0 0 16px rgba(255, 113, 57, 0.2);
-  transition: all 0.2s ease;
-}
-.btn-outline-flame:hover {
-  border-color: #FF7139;
-  background: rgba(255, 113, 57, 0.15);
-  box-shadow: 0 0 24px rgba(255, 113, 57, 0.35);
-  color: #FFFFFF;
-}
-
-/* Technical Corner Accents */
-.technical-corner {
-  position: relative;
-}
-.technical-corner::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 8px;
-  height: 8px;
-  border-top: 2px solid #22D3EE;
-  border-left: 2px solid #22D3EE;
-  border-top-left-radius: 4px;
-  pointer-events: none;
-}
-.technical-corner::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 8px;
-  height: 8px;
-  border-bottom: 2px solid #22D3EE;
-  border-right: 2px solid #22D3EE;
-  border-bottom-right-radius: 4px;
-  pointer-events: none;
-}
-
-/* Monospace telemetry pill */
-.telemetry-tag {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6875rem;
-  letter-spacing: 0.05em;
-  padding: 0.2rem 0.5rem;
-  border-radius: 0.375rem;
-  background-color: #0A1118;
-  border: 1px solid #1E3442;
-  color: #94A3B8;
-}
-
-/* Status Breathing Pulse Animation */
-@keyframes status-pulse {
+/* Restrained Status Pulsing */
+@keyframes pulse-dot {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(54, 211, 153, 0.5);
+    opacity: 1;
+    transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 0 6px rgba(54, 211, 153, 0);
+    opacity: 0.5;
+    transform: scale(0.92);
   }
 }
 .pulse-nominal {
-  animation: status-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulse-dot 2.5s ease-in-out infinite;
 }
 
-@keyframes status-pulse-amber {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(245, 185, 66, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 0 6px rgba(245, 185, 66, 0);
-  }
-}
-.pulse-caution {
-  animation: status-pulse-amber 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Blueprint Line Drawing Overlay */
-.blueprint-grid {
-  background-color: #070D14;
-  background-image: 
-    linear-gradient(rgba(34, 211, 238, 0.12) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(34, 211, 238, 0.12) 1px, transparent 1px);
-  background-size: 16px 16px;
-  border: 1px solid #1E3442;
-  border-radius: 0.625rem;
-}
-
-/* Custom Aerospace Scrollbar */
+/* Precision Scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #05090D;
+  background: #060A10;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1E3442;
-  border-radius: 2px;
+  background: #1B2B3C;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #22D3EE;
+  background: #253A50;
+}
+
+/* Smooth Table Scroll */
+.scientific-table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
