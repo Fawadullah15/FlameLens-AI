@@ -105,7 +105,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* Right: Datasets indicator & Search on mobile */}
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
         <button
           onClick={onOpenSearch}
           className="md:hidden p-1.5 rounded-[6px] text-[#6E6E6E] hover:text-[#0D0D0D] hover:bg-[#F0F0F0]"
@@ -116,10 +116,11 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         <button
           onClick={onOpenSources}
-          className="flex items-center space-x-1.5 px-2.5 py-1 text-[11px] font-medium text-[#555555] hover:text-[#0D0D0D] bg-[#F7F7F8] hover:bg-[#EFEFEF] border border-[#E5E5E5] rounded-[6px] transition-colors"
+          className="flex items-center space-x-1.5 px-2 sm:px-2.5 py-1 text-[11px] font-medium text-[#555555] hover:text-[#0D0D0D] bg-[#F7F7F8] hover:bg-[#EFEFEF] border border-[#E5E5E5] rounded-[6px] transition-colors shrink-0"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-[#10A37F]" />
-          <span>{experimentCount} NASA Experiments</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-[#10A37F] shrink-0" />
+          <span className="hidden sm:inline">{experimentCount} NASA Experiments</span>
+          <span className="sm:hidden">{experimentCount} Exp</span>
         </button>
       </div>
     </header>

@@ -60,7 +60,7 @@ export const Layout: React.FC = () => {
       />
 
       {/* Main Workspace Column */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-white">
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden overflow-x-hidden bg-white">
         <Navbar
           onOpenSearch={() => setIsSearchOpen(true)}
           onOpenSources={() => setIsSourcesOpen(true)}
@@ -70,7 +70,7 @@ export const Layout: React.FC = () => {
           onToggleSidebarCollapse={() => setIsSidebarCollapsed(prev => !prev)}
         />
 
-        <main className="flex-1 overflow-y-auto bg-white min-w-0">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-white min-w-0">
           <Outlet />
         </main>
       </div>

@@ -343,8 +343,8 @@ export const AICopilot: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-white relative">
       {/* ── TOP MODE SELECTION BAR ────────────────────────────────────── */}
-      <div className="border-b border-[#EBEBEB] px-4 py-2 flex items-center justify-between bg-white z-10 shrink-0">
-        <div className="flex items-center space-x-1">
+      <div className="border-b border-[#EBEBEB] px-3 sm:px-4 py-2 flex items-center justify-between gap-2 bg-white z-10 shrink-0 min-w-0">
+        <div className="flex items-center space-x-1 overflow-x-auto no-scrollbar py-0.5 min-w-0">
           {MODES.map((m) => {
             const Icon = m.icon;
             const isSelected = activeMode === m.id;
@@ -352,7 +352,7 @@ export const AICopilot: React.FC = () => {
               <button
                 key={m.id}
                 onClick={() => setActiveMode(m.id)}
-                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-[8px] text-[13px] font-medium transition-colors ${
+                className={`flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-[8px] text-[12px] sm:text-[13px] font-medium transition-colors shrink-0 whitespace-nowrap ${
                   isSelected
                     ? 'bg-[#EAEAEA] text-[#0D0D0D]'
                     : 'text-[#666666] hover:text-[#0D0D0D] hover:bg-[#F4F4F4]'
@@ -365,7 +365,7 @@ export const AICopilot: React.FC = () => {
           })}
         </div>
 
-        <div className="flex items-center space-x-2 text-xs text-[#8F8F8F]">
+        <div className="flex items-center space-x-2 text-xs text-[#8F8F8F] shrink-0">
           <span className="hidden sm:inline font-mono text-[11px]">NASA RAG Grounding</span>
           {messages.length > 0 && (
             <button
@@ -384,16 +384,16 @@ export const AICopilot: React.FC = () => {
       </div>
 
       {/* ── CONVERSATION THREAD AREA ───────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+      <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-6">
         <div className="max-w-[768px] mx-auto w-full">
           {messages.length === 0 ? (
             /* Empty State: ChatGPT Style Welcome */
-            <div className="py-20 sm:py-28 text-center space-y-8">
+            <div className="py-16 sm:py-24 text-center space-y-6 sm:space-y-8">
               <div className="space-y-2 max-w-lg mx-auto">
-                <h2 className="text-2xl sm:text-3xl font-semibold text-[#0D0D0D] tracking-tight">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-[#0D0D0D] tracking-tight">
                   What would you like to investigate?
                 </h2>
-                <p className="text-[14px] text-[#6E6E6E] leading-relaxed">
+                <p className="text-xs sm:text-[14px] text-[#6E6E6E] leading-relaxed">
                   Ask about NASA microgravity combustion kinetics, droplet extinction limits, spherical flame geometry, or spacecraft fire safety.
                 </p>
               </div>
@@ -404,10 +404,10 @@ export const AICopilot: React.FC = () => {
                   <button
                     key={i}
                     onClick={() => handleSendMessage(prompt)}
-                    className="p-3.5 bg-white border border-[#E5E5E5] hover:border-[#CCCCCC] hover:bg-[#F9F9FA] rounded-[10px] text-[13px] text-[#333333] transition-colors leading-snug flex flex-col justify-between shadow-2xs"
+                    className="p-3 sm:p-3.5 bg-white border border-[#E5E5E5] hover:border-[#CCCCCC] hover:bg-[#F9F9FA] rounded-[10px] text-xs sm:text-[13px] text-[#333333] transition-colors leading-snug flex flex-col justify-between shadow-2xs"
                   >
                     <span>{prompt}</span>
-                    <span className="text-[11px] text-[#8F8F8F] font-mono mt-2">NASA PSI Data</span>
+                    <span className="text-[10px] sm:text-[11px] text-[#8F8F8F] font-mono mt-2">NASA PSI Data</span>
                   </button>
                 ))}
               </div>
@@ -422,7 +422,7 @@ export const AICopilot: React.FC = () => {
                     {isUser ? (
                       /* User message: clean light grey bubble aligned right */
                       <div className="flex justify-end">
-                        <div className="max-w-[80%] bg-[#F4F4F4] text-[#0D0D0D] rounded-[20px] px-4 py-2.5 text-[14px] leading-relaxed">
+                        <div className="max-w-[85%] sm:max-w-[80%] bg-[#F4F4F4] text-[#0D0D0D] rounded-[18px] sm:rounded-[20px] px-3.5 sm:px-4 py-2 sm:py-2.5 text-[13px] sm:text-[14px] leading-relaxed break-words">
                           {msg.content}
                         </div>
                       </div>
@@ -437,7 +437,7 @@ export const AICopilot: React.FC = () => {
                           <span className="text-[11px] font-mono text-[#8F8F8F]">{msg.timestamp}</span>
                         </div>
 
-                        <div className="pl-7">
+                        <div className="pl-6 sm:pl-7">
                           {msg.content ? (
                             <FormattedMessage content={msg.content} />
                           ) : (
@@ -532,9 +532,9 @@ export const AICopilot: React.FC = () => {
       </div>
 
       {/* ── STICKY CENTERED INPUT COMPOSER ─────────────────────────────── */}
-      <div className="sticky bottom-0 bg-gradient-to-t from-white via-white/95 to-transparent pt-4 pb-4 px-4 z-20">
+      <div className="sticky bottom-0 bg-gradient-to-t from-white via-white/95 to-transparent pt-3 pb-3 sm:pb-4 px-3 sm:px-4 z-20">
         <div className="max-w-[768px] mx-auto w-full">
-          <div className="relative flex items-end bg-white border border-[#E5E5E5] rounded-[24px] shadow-sm focus-within:border-[#0D0D0D] focus-within:ring-1 focus-within:ring-[#0D0D0D] transition-all p-2">
+          <div className="relative flex items-end bg-white border border-[#E5E5E5] rounded-[22px] sm:rounded-[24px] shadow-sm focus-within:border-[#0D0D0D] focus-within:ring-1 focus-within:ring-[#0D0D0D] transition-all p-1.5 sm:p-2">
             <textarea
               ref={textareaRef}
               rows={1}
@@ -542,7 +542,7 @@ export const AICopilot: React.FC = () => {
               onChange={handleTextareaInput}
               onKeyDown={handleKeyDown}
               placeholder={MODES.find(m => m.id === activeMode)?.placeholder || 'Ask a research question...'}
-              className="flex-1 bg-transparent border-none text-[14px] text-[#0D0D0D] placeholder:text-[#8F8F8F] focus:outline-none resize-none px-3 py-1.5 max-h-44 leading-relaxed"
+              className="flex-1 bg-transparent border-none text-[13px] sm:text-[14px] text-[#0D0D0D] placeholder:text-[#8F8F8F] focus:outline-none resize-none px-2 sm:px-3 py-1.5 max-h-44 leading-relaxed min-w-0"
             />
 
             <div className="flex items-center space-x-1 shrink-0 pb-0.5">
@@ -569,8 +569,8 @@ export const AICopilot: React.FC = () => {
             </div>
           </div>
 
-          <div className="text-center pt-2">
-            <span className="text-[12px] text-[#8F8F8F]">
+          <div className="text-center pt-1.5 sm:pt-2">
+            <span className="text-[11px] sm:text-[12px] text-[#8F8F8F]">
               FlameLens AI responses are derived from NASA Technical Reports and Physical Sciences Informatics.
             </span>
           </div>
