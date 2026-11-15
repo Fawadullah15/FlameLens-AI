@@ -5,10 +5,12 @@ import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { MissionOverview } from './pages/MissionOverview';
 import { CombustionIntelligence } from './pages/CombustionIntelligence';
 import { ResearchExplorer } from './pages/ResearchExplorer';
+import { Experiments } from './pages/Experiments';
 import { ScientificAnalysis } from './pages/ScientificAnalysis';
 import { AICopilot } from './pages/AICopilot';
 import { MissionSafety } from './pages/MissionSafety';
 import { ReportsFindings } from './pages/ReportsFindings';
+import { Settings } from './pages/Settings';
 
 export const App: React.FC = () => {
   return (
@@ -16,20 +18,20 @@ export const App: React.FC = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
-            {/* 7 Core Mission Intelligence Pages */}
+            {/* Core Scientific Intelligence Modules */}
             <Route index element={<MissionOverview />} />
-            <Route path="combustion" element={<CombustionIntelligence />} />
-            <Route path="library" element={<ResearchExplorer />} />
-            <Route path="analysis" element={<ScientificAnalysis />} />
             <Route path="copilot" element={<AICopilot />} />
-            <Route path="safety" element={<MissionSafety />} />
-            <Route path="reports" element={<ReportsFindings />} />
-
-            {/* Backward Compatibility Aliases */}
-            <Route path="comparison" element={<ScientificAnalysis />} />
             <Route path="assistant" element={<AICopilot />} />
+            <Route path="library" element={<ResearchExplorer />} />
+            <Route path="experiments" element={<Experiments />} />
+            <Route path="combustion" element={<CombustionIntelligence />} />
+            <Route path="analysis" element={<ScientificAnalysis />} />
+            <Route path="comparison" element={<ScientificAnalysis />} />
+            <Route path="safety" element={<MissionSafety />} />
             <Route path="risk" element={<MissionSafety />} />
             <Route path="incidents" element={<MissionSafety defaultTab="incidents" />} />
+            <Route path="reports" element={<ReportsFindings />} />
+            <Route path="settings" element={<Settings />} />
 
             {/* Catch-all */}
             <Route path="*" element={<Navigate to="/" replace />} />

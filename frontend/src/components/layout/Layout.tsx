@@ -32,40 +32,36 @@ export const Layout: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#060A10] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/20 selection:text-cyan-200">
-      <Navbar
-        onOpenSearch={() => setIsSearchOpen(true)}
-        onOpenSources={() => setIsSourcesOpen(true)}
-        isMobileNavOpen={isMobileNavOpen}
-        onToggleMobileNav={() => setIsMobileNavOpen(prev => !prev)}
+    <div className="min-h-screen bg-white text-[#272727] flex font-sans selection:bg-[#B86B39]/15 selection:text-[#B86B39]">
+      {/* Mobile Backdrop Overlay */}
+      {isMobileNavOpen && (
+        <div
+          onClick={() => setIsMobileNavOpen(false)}
+          className="fixed inset-0 bg-black/30 backdrop-blur-xs z-30 lg:hidden transition-opacity"
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Sidebar (Fixed on desktop, drawer on mobile) */}
+      <Sidebar
+        isOpen={isMobileNavOpen}
+        onClose={() => setIsMobileNavOpen(false)}
+        onOpenSources={() => {
+          setIsMobileNavOpen(false);
+          setIsSourcesOpen(true);
+        }}
       />
 
-      <div className="flex flex-1 relative overflow-hidden">
-        {/* Mobile Backdrop Overlay */}
-        {isMobileNavOpen && (
-          <div
-            onClick={() => setIsMobileNavOpen(false)}
-            className="fixed inset-0 bg-black/70 backdrop-blur-xs z-30 lg:hidden transition-opacity"
-            aria-hidden="true"
-          />
-        )}
-
-        {/* Sidebar Component */}
-        <Sidebar
-          isOpen={isMobileNavOpen}
-          onClose={() => setIsMobileNavOpen(false)}
-          onOpenIngestModal={() => {
-            setIsMobileNavOpen(false);
-            setIsIngestOpen(true);
-          }}
-          onOpenSources={() => {
-            setIsMobileNavOpen(false);
-            setIsSourcesOpen(true);
-          }}
+      {/* Main Workspace Column */}
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+        <Navbar
+          onOpenSearch={() => setIsSearchOpen(true)}
+          onOpenSources={() => setIsSourcesOpen(true)}
+          isMobileNavOpen={isMobileNavOpen}
+          onToggleMobileNav={() => setIsMobileNavOpen(prev => !prev)}
         />
 
-        {/* Main Application Content Area */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6 nasa-grid bg-[#060A10]/95 min-w-0">
+        <main className="flex-1 overflow-y-auto bg-white min-w-0">
           <Outlet />
         </main>
       </div>

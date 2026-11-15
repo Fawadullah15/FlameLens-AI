@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, X, BookOpen, Flame, ArrowRight, Loader2, Database } from 'lucide-react';
+import { Search, X, BookOpen, FlaskConical, ArrowRight, Loader2 } from 'lucide-react';
 import { api } from '../../services/api';
 import { ResearchDocument, Experiment } from '../../types';
 
@@ -56,130 +56,117 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 p-4 bg-black/80 backdrop-blur-md">
-      <div className="w-full max-w-2xl bg-[#0E1821] border border-[#1E3442] rounded-xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 p-4 bg-black/40 backdrop-blur-xs">
+      <div className="w-full max-w-2xl bg-white border border-[#E5E5E5] rounded-[12px] shadow-2xl flex flex-col overflow-hidden animate-in fade-in duration-150">
         {/* Search Input Bar */}
-        <div className="flex items-center px-4 py-3.5 border-b border-[#1E3442] bg-[#0A1118]">
-          <Search className="w-5 h-5 text-cyan-400 flex-shrink-0 mr-3" />
+        <div className="flex items-center px-4 py-3 border-b border-[#E5E5E5] bg-white">
+          <Search className="w-4 h-4 text-[#8A8A8A] shrink-0 mr-3" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search NASA research, fuels (heptane, methanol), D² kinetics, or flight runs..."
-            className="w-full bg-transparent text-sm font-mono text-slate-100 placeholder-slate-500 focus:outline-none"
+            placeholder="Search papers, experiments, fuels (e.g. Heptane, FLEX, d²-law)..."
+            className="flex-1 bg-transparent border-none text-[14px] text-[#272727] placeholder:text-[#8A8A8A] focus:outline-none"
           />
-          {loading && <Loader2 className="w-4 h-4 text-cyan-400 animate-spin mr-2" />}
+          {loading && <Loader2 className="w-4 h-4 text-[#8A8A8A] animate-spin shrink-0 mx-2" />}
           <button
             onClick={onClose}
-            className="p-1 rounded text-slate-400 hover:text-white transition-colors"
+            className="p-1 rounded-[6px] text-[#8A8A8A] hover:text-[#272727] hover:bg-[#F0F0F0]"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Results Container */}
-        <div className="max-h-[60vh] overflow-y-auto p-4 space-y-4">
-          {!query && (
-            <div className="py-8 text-center space-y-2">
-              <Database className="w-8 h-8 text-slate-600 mx-auto" />
-              <p className="text-xs font-mono text-slate-400">
-                Type keywords like <span className="text-cyan-400">"spherical flame"</span>, <span className="text-cyan-400">"heptane"</span>, <span className="text-cyan-400">"soot"</span>, or <span className="text-cyan-400">"FLEX-001"</span>
-              </p>
+        <div className="max-h-[60vh] overflow-y-auto p-3 space-y-4">
+          {!query.trim() ? (
+            <div className="py-8 text-center text-xs text-[#8A8A8A]">
+              Type at least 2 characters to search across NASA documents and experiments.
             </div>
-          )}
+          ) : papers.length === 0 && experiments.length === 0 && !loading ? (
+            <div className="py-8 text-center text-xs text-[#8A8A8A]">
+              No documents or experiments found for "{query}".
+            </div>
+          ) : (
+            <>
+              {/* Experiments */}
+              {experiments.length > 0 && (
+                <div>
+                  <div className="text-[11px] font-semibold text-[#8A8A8A] uppercase tracking-wider px-2 mb-1.5 flex items-center justify-between">
+                    <span>Experiments</span>
+                    <span className="font-mono text-[10px]">{experiments.length} matches</span>
+                  </div>
+                  <div className="space-y-1">
+                    {experiments.map((exp) => (
+                      <button
+                        key={exp.id || exp.experiment_id}
+                        onClick={() => {
+                          onClose();
+                          navigate(`/combustion?experimentId=${exp.experiment_id}`);
+                        }}
+                        className="w-full text-left p-2.5 rounded-[8px] hover:bg-[#F7F7F8] border border-transparent hover:border-[#E5E5E5] transition-colors flex items-center justify-between group"
+                      >
+                        <div className="flex items-center space-x-2.5 min-w-0">
+                          <FlaskConical className="w-4 h-4 text-[#B86B39] shrink-0" />
+                          <div className="truncate">
+                            <span className="font-mono text-xs font-semibold text-[#272727] mr-2">
+                              {exp.experiment_id}
+                            </span>
+                            <span className="text-xs text-[#6B6B6B]">
+                              {exp.title || `${exp.fuel_type} combustion in ${exp.gravity_level === 0 ? 'microgravity' : 'normal gravity'}`}
+                            </span>
+                          </div>
+                        </div>
+                        <ArrowRight className="w-3.5 h-3.5 text-[#CCCCCC] group-hover:text-[#272727] shrink-0 transition-colors" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-          {query && !loading && papers.length === 0 && experiments.length === 0 && (
-            <div className="py-8 text-center text-xs font-mono text-slate-500">
-              No matching NASA research papers or flight runs found for "{query}".
-            </div>
-          )}
-
-          {/* Experiments Section */}
-          {experiments.length > 0 && (
-            <div>
-              <p className="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
-                <Flame className="w-3 h-3 text-cyan-400" />
-                <span>FLIGHT EXPERIMENT RUNS ({experiments.length})</span>
-              </p>
-              <div className="space-y-1.5">
-                {experiments.map(exp => (
-                  <button
-                    key={exp.experiment_id}
-                    onClick={() => {
-                      onClose();
-                      navigate(`/combustion?id=${exp.experiment_id}`);
-                    }}
-                    className="w-full text-left p-2.5 rounded-lg bg-[#0A1118] hover:bg-space-800 border border-[#1E3442] hover:border-cyan-500/50 transition-all flex items-center justify-between group"
-                  >
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-[10px] font-mono font-bold text-cyan-400 px-1.5 py-0.2 rounded bg-cyan-950 border border-cyan-800">
-                          {exp.experiment_id}
-                        </span>
-                        <span className="text-xs font-semibold text-slate-100 group-hover:text-cyan-300">
-                          {exp.title}
-                        </span>
-                      </div>
-                      <div className="text-[10px] font-mono text-slate-400 mt-1 flex items-center gap-3">
-                        <span>FUEL: {exp.fuel_type}</span>
-                        <span>•</span>
-                        <span>PLATFORM: {exp.mission_platform}</span>
-                        <span>•</span>
-                        <span>G-LEVEL: {exp.gravity_level === 0 ? '10⁻⁶ g (µg)' : '1-g'}</span>
-                      </div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all" />
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Research Papers Section */}
-          {papers.length > 0 && (
-            <div>
-              <p className="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
-                <BookOpen className="w-3 h-3 text-teal-400" />
-                <span>RESEARCH PAPERS & NASA DOCUMENTS ({papers.length})</span>
-              </p>
-              <div className="space-y-1.5">
-                {papers.map(doc => (
-                  <button
-                    key={doc.doc_id}
-                    onClick={() => {
-                      onClose();
-                      navigate(`/library?doc=${doc.doc_id}`);
-                    }}
-                    className="w-full text-left p-2.5 rounded-lg bg-[#0A1118] hover:bg-space-800 border border-[#1E3442] hover:border-teal-500/50 transition-all flex items-center justify-between group"
-                  >
-                    <div className="pr-4">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-[10px] font-mono text-teal-400 px-1.5 py-0.2 rounded bg-teal-950 border border-teal-800">
-                          {doc.doc_id}
-                        </span>
-                        <span className="text-xs font-semibold text-slate-100 group-hover:text-teal-300 line-clamp-1">
-                          {doc.title}
-                        </span>
-                      </div>
-                      {doc.abstract && (
-                        <p className="text-[11px] text-slate-400 mt-1 line-clamp-1">
-                          {doc.abstract}
-                        </p>
-                      )}
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-teal-400 group-hover:translate-x-1 transition-all flex-shrink-0" />
-                  </button>
-                ))}
-              </div>
-            </div>
+              {/* Research Papers */}
+              {papers.length > 0 && (
+                <div>
+                  <div className="text-[11px] font-semibold text-[#8A8A8A] uppercase tracking-wider px-2 mb-1.5 flex items-center justify-between">
+                    <span>Research Documents</span>
+                    <span className="font-mono text-[10px]">{papers.length} matches</span>
+                  </div>
+                  <div className="space-y-1">
+                    {papers.map((doc) => (
+                      <button
+                        key={doc.id || doc.doc_id}
+                        onClick={() => {
+                          onClose();
+                          navigate(`/library?doc=${doc.doc_id}`);
+                        }}
+                        className="w-full text-left p-2.5 rounded-[8px] hover:bg-[#F7F7F8] border border-transparent hover:border-[#E5E5E5] transition-colors flex items-center justify-between group"
+                      >
+                        <div className="flex items-center space-x-2.5 min-w-0">
+                          <BookOpen className="w-4 h-4 text-[#6B6B6B] shrink-0" />
+                          <div className="truncate">
+                            <div className="text-xs font-medium text-[#272727] truncate">
+                              {doc.title}
+                            </div>
+                            <div className="text-[11px] text-[#8A8A8A] truncate mt-0.5">
+                              {doc.publication_venue || doc.institution || 'NASA Glenn Research Center'} • {doc.publication_year}
+                            </div>
+                          </div>
+                        </div>
+                        <ArrowRight className="w-3.5 h-3.5 text-[#CCCCCC] group-hover:text-[#272727] shrink-0 transition-colors" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-2.5 border-t border-[#1E3442] bg-[#0A1118] flex items-center justify-between text-[11px] font-mono text-slate-500">
-          <span>PRESS ESC TO CLOSE</span>
-          <span>POWERED BY NASA FTS5 RETRIEVAL ENGINE</span>
+        <div className="px-4 py-2 border-t border-[#E5E5E5] bg-[#F7F7F8] flex items-center justify-between text-[11px] text-[#8A8A8A]">
+          <span>Navigate with <kbd className="px-1 border border-[#E5E5E5] rounded bg-white">↑</kbd> <kbd className="px-1 border border-[#E5E5E5] rounded bg-white">↓</kbd></span>
+          <span>Press <kbd className="px-1 border border-[#E5E5E5] rounded bg-white">ESC</kbd> to close</span>
         </div>
       </div>
     </div>

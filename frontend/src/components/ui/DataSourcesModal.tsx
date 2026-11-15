@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, ExternalLink, Database, Search, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { X, ExternalLink, Database, Search, ShieldCheck } from 'lucide-react';
 import { api } from '../../services/api';
 import { Source } from '../../types';
 
@@ -37,112 +37,106 @@ export const DataSourcesModal: React.FC<DataSourcesModalProps> = ({ isOpen, onCl
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-      <div className="w-full max-w-4xl max-h-[85vh] bg-[#0E1821] border border-[#1E3442] rounded-xl shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
+      <div className="w-full max-w-4xl max-h-[85vh] bg-white border border-[#E5E5E5] rounded-[12px] shadow-xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#1E3442] bg-[#0A1118]">
-          <div className="flex items-center space-x-3">
-            <img
-              src="/flamelens-logo.png"
-              alt="FlameLens Emblem"
-              className="w-7 h-7 object-contain drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]"
-            />
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800">
-                  NASA DATA PROVENANCE
-                </span>
-                <span className="text-xs font-mono text-slate-400">28 VERIFIED REPOSITORIES</span>
-              </div>
-              <h3 className="text-base font-semibold text-white tracking-wide mt-0.5">
-                Connected Scientific Repositories & Data Portals
-              </h3>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E5E5] bg-[#F7F7F8]">
+          <div>
+            <div className="flex items-center space-x-2">
+              <span className="text-[11px] font-mono font-medium px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                NASA DATA PROVENANCE
+              </span>
+              <span className="text-xs text-[#8A8A8A]">{sources.length} Verified Repositories</span>
             </div>
+            <h3 className="text-base font-semibold text-[#272727] tracking-tight mt-1">
+              Connected Scientific Repositories & Data Portals
+            </h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-space-800 transition-colors"
+            className="p-1.5 rounded-[6px] text-[#6B6B6B] hover:text-[#272727] hover:bg-[#EAEAEA] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Search Bar */}
-        <div className="px-6 py-3 border-b border-[#1E3442] bg-[#0A1118]/60 flex items-center gap-3">
-          <Search className="w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Filter repositories by NASA center, acronym, or collection..."
-            className="w-full bg-transparent text-xs font-mono text-slate-200 placeholder-slate-500 focus:outline-none"
-          />
+        {/* Search */}
+        <div className="p-4 border-b border-[#E5E5E5] bg-white">
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A8A8A]" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Filter repositories by name, center, or archive ID..."
+              className="w-full pl-10 pr-4 py-2 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px] text-[13px] text-[#272727] placeholder:text-[#8A8A8A] focus:outline-none focus:ring-1 focus:ring-[#242424]"
+            />
+          </div>
         </div>
 
-        {/* Content list */}
+        {/* Sources List */}
         <div className="flex-1 overflow-y-auto p-6 space-y-3">
           {loading ? (
-            <div className="py-16 text-center font-mono text-xs text-cyan-400">
-              RETRIEVING NASA SOURCE METADATA...
+            <div className="py-12 text-center text-xs text-[#8A8A8A]">
+              Loading verified NASA repositories...
             </div>
           ) : filtered.length === 0 ? (
-            <div className="py-16 text-center font-mono text-xs text-slate-500">
-              No repositories matched your search query.
+            <div className="py-12 text-center text-xs text-[#8A8A8A]">
+              No repositories matched "{search}".
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {filtered.map(src => (
-                <div
-                  key={src.source_id}
-                  className="p-4 rounded-lg bg-[#0A1118] border border-[#1E3442] hover:border-cyan-500/50 transition-all space-y-2 flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] font-mono text-cyan-400 font-semibold px-1.5 py-0.5 rounded bg-cyan-950/60 border border-cyan-800/60">
-                        {src.source_id}
-                      </span>
-                      <span className="flex items-center space-x-1 text-[10px] font-mono text-emerald-400">
-                        <CheckCircle2 className="w-3 h-3" />
-                        <span>VERIFIED NASA</span>
-                      </span>
-                    </div>
-                    <h4 className="text-xs font-semibold text-slate-100">{src.name}</h4>
-                    <p className="text-[11px] font-mono text-slate-400 mt-0.5">{src.organization}</p>
-                    {src.description && (
-                      <p className="text-[11px] text-slate-400 mt-2 line-clamp-2 leading-relaxed">
-                        {src.description}
-                      </p>
-                    )}
+            filtered.map(s => (
+              <div
+                key={s.id || s.source_id}
+                className="p-4 bg-white border border-[#E5E5E5] rounded-[9px] hover:border-[#D4D4D4] transition-colors flex flex-col md:flex-row md:items-center justify-between gap-3"
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center space-x-2">
+                    <span className="font-mono text-xs font-semibold text-[#B86B39]">
+                      {s.source_id}
+                    </span>
+                    <h4 className="text-sm font-semibold text-[#272727]">
+                      {s.name}
+                    </h4>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      {s.verification_status || 'Verified'}
+                    </span>
                   </div>
-
-                  <div className="pt-2 border-t border-[#1E3442]/60 flex items-center justify-between text-[10px] font-mono text-slate-400">
-                    <span>{src.repository}</span>
-                    {src.url ? (
-                      <a
-                        href={src.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 transition-colors"
-                      >
-                        <span>Access Portal</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    ) : (
-                      <span className="text-slate-500">Internal Archive</span>
-                    )}
+                  <p className="text-xs text-[#6B6B6B] line-clamp-2">
+                    {s.description || 'Authentic NASA microgravity combustion investigation archive.'}
+                  </p>
+                  <div className="flex items-center space-x-4 text-[11px] text-[#8A8A8A] pt-1">
+                    <span>Org: <strong className="font-normal text-[#272727]">{s.organization}</strong></span>
+                    <span>Repo: <strong className="font-normal text-[#272727]">{s.repository}</strong></span>
+                    <span>Access: <strong className="font-normal text-[#272727]">{s.access_type}</strong></span>
                   </div>
                 </div>
-              ))}
-            </div>
+
+                {s.url && (
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 inline-flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium text-[#272727] bg-[#F7F7F8] hover:bg-[#EAEAEA] border border-[#E5E5E5] rounded-[6px] transition-colors"
+                  >
+                    <span>View Portal</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                )}
+              </div>
+            ))
           )}
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-[#1E3442] bg-[#0A1118] flex items-center justify-between text-xs font-mono text-slate-400">
-          <span>ALL REPOSITORIES DIRECTLY LINKED & VERIFIED BY NASA</span>
+        <div className="px-6 py-3 border-t border-[#E5E5E5] bg-[#F7F7F8] flex items-center justify-between text-xs text-[#8A8A8A]">
+          <div className="flex items-center space-x-2">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <span>All records verified against NASA Technical Reports Server (NTRS) and Physical Sciences Informatics (PSI).</span>
+          </div>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 rounded-lg bg-space-800 hover:bg-space-700 text-slate-200 text-xs transition-colors"
+            className="px-3.5 py-1.5 text-xs font-medium text-[#272727] bg-white border border-[#E5E5E5] rounded-[6px] hover:bg-[#EAEAEA]"
           >
             Close
           </button>

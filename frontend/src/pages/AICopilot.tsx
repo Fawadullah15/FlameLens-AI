@@ -1,209 +1,223 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
-  Bot,
-  Send,
-  Sparkles,
-  BookOpen,
-  ExternalLink,
-  ShieldCheck,
-  AlertTriangle,
-  Loader2,
+  ArrowUp,
   Square,
-  Trash2,
   Copy,
   Check,
-  Activity,
+  RotateCcw,
+  BookOpen,
+  ExternalLink,
+  ChevronDown,
+  Sparkles,
   Flame,
   BarChart2,
-  Cpu,
-  Layers,
-  Info,
-  ChevronRight,
-  Database,
-  Compass
+  Paperclip,
+  Share2
 } from 'lucide-react';
 import { api } from '../services/api';
 import { ChatMessage, CitationRef, AIMode, StreamMetadata } from '../types';
 
-const MODE_CONFIGS: Record<AIMode, { label: string; badge: string; desc: string; icon: any; color: string }> = {
-  SCIENTIFIC_RESEARCH: {
-    label: 'Scientific Research',
-    badge: 'MODE A: THEORY',
-    desc: 'Combustion kinetics, spherical flame geometry, cool flames, and soot radiation',
+const MODES: { id: AIMode; label: string; icon: any; placeholder: string }[] = [
+  {
+    id: 'SCIENTIFIC_RESEARCH',
+    label: 'Combustion Theory',
     icon: Sparkles,
-    color: 'border-cyan-500/70 text-cyan-300 bg-cyan-950/40 shadow-glow-cyan'
+    placeholder: 'Ask about microgravity kinetics, spherical symmetry, cool flames...'
   },
-  SPACECRAFT_FIRE_SAFETY: {
-    label: 'Spacecraft Fire Safety',
-    badge: 'MODE B: SAFETY',
-    desc: 'Cabin oxygen hazards, detector latency, suppression protocols, and Apollo/Mir lessons',
+  {
+    id: 'SPACECRAFT_FIRE_SAFETY',
+    label: 'Fire Safety',
     icon: Flame,
-    color: 'border-rose-500/70 text-rose-300 bg-rose-950/40 shadow-glow-danger'
+    placeholder: 'Ask about spacecraft oxygen limits, Apollo/Mir lessons, suppression...'
   },
-  EXPERIMENTAL_DATA_ANALYSIS: {
-    label: 'Experimental Data Analysis',
-    badge: 'MODE C: DATA',
-    desc: 'D² law linear regressions, burning rate K, R² fit, and microgravity vs 1-g comparisons',
+  {
+    id: 'EXPERIMENTAL_DATA_ANALYSIS',
+    label: 'Data Analysis',
     icon: BarChart2,
-    color: 'border-teal-500/70 text-teal-300 bg-teal-950/40 shadow-glow-teal'
+    placeholder: 'Ask about d²-law burning rates, K values, R² fits, comparison...'
   }
-};
+];
 
-const SUGGESTED_QUESTIONS: Record<AIMode, string[]> = {
+const STARTER_PROMPTS: Record<AIMode, string[]> = {
   SCIENTIFIC_RESEARCH: [
-    "Why does flame shape change in microgravity?",
-    "Explain the D² law using NASA experiments.",
-    "Compare FLEX and FLEX-2 findings.",
-    "What causes flame extinction in microgravity?"
+    "Why does flame shape become spherical in microgravity?",
+    "Explain the d²-law droplet kinetics using NASA flight experiments.",
+    "What is the cool flame phenomenon discovered in the FLEX experiment?",
+    "How does soot formation differ between 1g and microgravity?"
   ],
   SPACECRAFT_FIRE_SAFETY: [
-    "What happened during the Apollo 1 fire?",
-    "What lessons came from the Mir fire?",
-    "How does oxygen concentration influence combustion?",
-    "How could spacecraft fire safety improve for Artemis?"
+    "What key combustion lessons came from the Apollo 1 and Mir incidents?",
+    "How does elevated oxygen concentration (e.g. 32%) influence flammability?",
+    "What are the microgravity fire extinction challenges for lunar habitats?",
+    "Explain how smoke detector latency differs without buoyant convection."
   ],
   EXPERIMENTAL_DATA_ANALYSIS: [
-    "Compare heptane burning rates: microgravity vs 1-g.",
-    "What is the D² burning rate K for FLEX-001?",
-    "How does oxygen concentration affect flame standoff?",
-    "Summarize soot production differences across fuel types."
+    "Compare n-heptane burning rate K in microgravity vs terrestrial 1g.",
+    "What are the extinction diameters for decane droplets in 21% oxygen?",
+    "How does ambient pressure affect the flame standoff ratio?",
+    "Summarize burning rate differences across alkane and alcohol fuels."
   ]
 };
 
-// Formats Markdown content with code blocks, tables, bold text, and math equations
-const FormattedScientificContent: React.FC<{ content: string }> = ({ content }) => {
+// Clean Markdown Formatter for Scientific Content
+const FormattedMessage: React.FC<{ content: string; onCitationClick?: (cite: string) => void }> = ({
+  content,
+  onCitationClick
+}) => {
+  if (!content) return null;
+
   const blocks = content.split('\n\n');
 
   return (
-    <div className="space-y-3 text-xs leading-relaxed text-slate-200">
+    <div className="space-y-3.5 text-[14px] leading-relaxed text-[#272727]">
       {blocks.map((block, idx) => {
-        // Table Detection
-        if (block.trim().startsWith('|') && block.includes('---')) {
-          const rows = block.trim().split('\n').map(r => r.split('|').filter(c => c.trim().length > 0));
-          if (rows.length >= 2) {
-            const header = rows[0];
-            const dataRows = rows.slice(2);
-            return (
-              <div key={idx} className="overflow-x-auto my-3 p-2 bg-[#05090D] rounded-lg border border-[#1E3442]">
-                <table className="w-full text-left font-mono text-[11px]">
-                  <thead>
-                    <tr className="border-b border-[#1E3442] text-cyan-400">
-                      {header.map((col, i) => (
-                        <th key={i} className="py-1 px-2.5 font-bold uppercase">{col.trim()}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#1E3442]/60 text-slate-300">
-                    {dataRows.map((r, ri) => (
-                      <tr key={ri} className="hover:bg-[#13212C]/40">
-                        {r.map((c, ci) => (
-                          <td key={ci} className="py-1 px-2.5">{c.trim()}</td>
+        const trimmed = block.trim();
+
+        // 1. Markdown Table
+        if (trimmed.startsWith('|') && trimmed.includes('---')) {
+          const lines = trimmed.split('\n');
+          const headerCells = lines[0].split('|').map(c => c.trim()).filter(Boolean);
+          const bodyLines = lines.slice(2);
+
+          return (
+            <div key={idx} className="my-3 overflow-x-auto border border-[#E5E5E5] rounded-[8px]">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead className="bg-[#F7F7F8] border-b border-[#E5E5E5]">
+                  <tr>
+                    {headerCells.map((h, i) => (
+                      <th key={i} className="py-2 px-3 font-semibold text-[#272727]">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#E5E5E5]">
+                  {bodyLines.map((row, rIdx) => {
+                    const cells = row.split('|').map(c => c.trim()).filter(Boolean);
+                    if (!cells.length) return null;
+                    return (
+                      <tr key={rIdx} className="hover:bg-[#F9F9FA]">
+                        {cells.map((cell, cIdx) => (
+                          <td key={cIdx} className="py-2 px-3 text-[#555555]">
+                            {cell}
+                          </td>
                         ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            );
-          }
-        }
-
-        // Section Headings (###)
-        if (block.startsWith('### ')) {
-          return (
-            <h4 key={idx} className="font-display font-bold text-sm text-cyan-300 pt-2 border-b border-[#1E3442] pb-1">
-              {block.replace('### ', '')}
-            </h4>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           );
         }
-        if (block.startsWith('## ')) {
+
+        // 2. Headings
+        if (trimmed.startsWith('### ')) {
           return (
-            <h3 key={idx} className="font-display font-bold text-base text-white pt-2 border-b border-[#1E3442] pb-1">
-              {block.replace('## ', '')}
+            <h3 key={idx} className="text-[15px] font-semibold text-[#272727] pt-2">
+              {trimmed.replace('### ', '')}
             </h3>
           );
         }
-
-        // Bullet Lists
-        if (block.startsWith('* ') || block.startsWith('- ') || block.match(/^\d+\.\s/)) {
-          const items = block.split('\n').filter(i => i.trim().length > 0);
+        if (trimmed.startsWith('## ')) {
           return (
-            <ul key={idx} className="space-y-1 my-2 pl-4 list-disc marker:text-cyan-400">
-              {items.map((it, i) => {
-                const cleaned = it.replace(/^(\*|-|\d+\.)\s*/, '');
-                return <li key={i} dangerouslySetInnerHTML={{ __html: formatInline(cleaned) }} />;
-              })}
+            <h2 key={idx} className="text-[16px] font-semibold text-[#272727] pt-3">
+              {trimmed.replace('## ', '')}
+            </h2>
+          );
+        }
+
+        // 3. Bullet list
+        if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          const items = trimmed.split('\n').filter(Boolean);
+          return (
+            <ul key={idx} className="space-y-1.5 pl-4 list-disc marker:text-[#8A8A8A]">
+              {items.map((item, i) => (
+                <li key={i} className="text-[#333333]">
+                  <span dangerouslySetInnerHTML={{ __html: renderInline(item.replace(/^[-*]\s+/, '')) }} />
+                </li>
+              ))}
             </ul>
           );
         }
 
-        // Default Paragraph
+        // 4. Numbered list
+        if (/^\d+\.\s/.test(trimmed)) {
+          const items = trimmed.split('\n').filter(Boolean);
+          return (
+            <ol key={idx} className="space-y-1.5 pl-4 list-decimal marker:text-[#8A8A8A]">
+              {items.map((item, i) => (
+                <li key={i} className="text-[#333333]">
+                  <span dangerouslySetInnerHTML={{ __html: renderInline(item.replace(/^\d+\.\s+/, '')) }} />
+                </li>
+              ))}
+            </ol>
+          );
+        }
+
+        // 5. Code block
+        if (trimmed.startsWith('```')) {
+          const code = trimmed.replace(/^```[a-z]*\n?/, '').replace(/\n?```$/, '');
+          return (
+            <pre key={idx} className="p-3 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px] font-mono text-xs overflow-x-auto text-[#272727]">
+              <code>{code}</code>
+            </pre>
+          );
+        }
+
+        // 6. Regular Paragraph
         return (
-          <p
-            key={idx}
-            className="text-slate-300 leading-relaxed font-sans"
-            dangerouslySetInnerHTML={{ __html: formatInline(block) }}
-          />
+          <p key={idx} dangerouslySetInnerHTML={{ __html: renderInline(trimmed) }} />
         );
       })}
     </div>
   );
 };
 
-function formatInline(str: string): string {
-  return str
-    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-white">$1</strong>')
-    .replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 rounded bg-[#05090D] text-cyan-300 font-mono text-[11px] border border-[#1E3442]">$1</code>')
+function renderInline(text: string): string {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-[#272727]">$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em class="italic text-[#333333]">$1</em>')
+    .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-[#F4F4F4] text-[#272727] font-mono text-[12px]">$1</code>')
+    .replace(/\[(\d+)\]/g, '<span class="inline-flex items-center px-1 py-0.2 mx-0.5 text-[11px] font-mono font-medium rounded bg-[#F8F1EC] text-[#B86B39] border border-[#EBDAD0]">[$1]</span>')
     .replace(/d\^2/g, 'd²')
     .replace(/d0\^2/g, 'd₀²');
 }
 
 export const AICopilot: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeMode, setActiveMode] = useState<AIMode>('SCIENTIFIC_RESEARCH');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [sessionId, setSessionId] = useState<string>(() => `SES-${Date.now().toString(36).toUpperCase()}`);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [activeModel, setActiveModel] = useState<string>('GEMINI 2.5 FLASH');
-  const [latestSources, setLatestSources] = useState<CitationRef[]>([]);
+  const [expandedSourcesId, setExpandedSourcesId] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const hasAutoFired = useRef(false);
 
+  // Initialize or handle query params
   useEffect(() => {
-    // Welcome message
-    const welcomeMsg: ChatMessage = {
-      id: 'welcome-001',
-      role: 'assistant',
-      content: `### Welcome to FlameLens AI — Scientific Research Copilot
+    const queryParam = searchParams.get('q');
+    const newSession = searchParams.get('new');
 
-I am your mission-grounded scientific copilot specialized in **microgravity combustion kinetics**, **flame morphology**, and **spacecraft fire safety protocols**.
+    if (newSession === 'true') {
+      setMessages([]);
+      setSessionId(`SES-${Date.now().toString(36).toUpperCase()}`);
+      setSearchParams({}, { replace: true });
+      return;
+    }
 
-All responses are strictly derived from verified **NASA Glenn Research Center (GRC)**, **ISS Combustion Integrated Rack (CIR)**, and **NASA Physical Sciences Informatics (PSI)** flight records.
-
-Select a research mode above or choose a standard mission inquiry below to begin.`,
-      sources: [
-        {
-          source_id: 'SRC-NASA-PSI',
-          title: 'NASA Physical Sciences Informatics (PSI) Repository',
-          doc_id: 'NASA-PSI-REPO',
-          url: 'https://psi.nasa.gov/'
-        },
-        {
-          source_id: 'SRC-NASA-GLENN',
-          title: 'NASA Glenn Research Center Combustion Science Branch',
-          doc_id: 'NASA-GRC-COMB',
-          url: 'https://www1.grc.nasa.gov/'
-        }
-      ],
-      mode: 'SCIENTIFIC_RESEARCH',
-      status: 'complete'
-    };
-
-    setMessages([welcomeMsg]);
-    setLatestSources(welcomeMsg.sources || []);
-  }, []);
+    if (queryParam && !hasAutoFired.current) {
+      hasAutoFired.current = true;
+      handleSendMessage(queryParam);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -215,12 +229,6 @@ Select a research mode above or choose a standard mission inquiry below to begin
       abortControllerRef.current = null;
       setIsStreaming(false);
     }
-  };
-
-  const handleClear = () => {
-    if (isStreaming) handleStopStream();
-    setMessages([]);
-    setSessionId(`SES-${Date.now().toString(36).toUpperCase()}`);
   };
 
   const handleCopy = (text: string, id: string) => {
@@ -258,6 +266,10 @@ Select a research mode above or choose a standard mission inquiry below to begin
     setInput('');
     setIsStreaming(true);
 
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
+
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
 
@@ -280,9 +292,6 @@ Select a research mode above or choose a standard mission inquiry below to begin
               m.id === assistantMsgId ? { ...m, sources: meta.sources, mode: meta.mode } : m
             )
           );
-          if (meta.sources && meta.sources.length > 0) {
-            setLatestSources(meta.sources);
-          }
         },
         onChunk: (chunkText: string) => {
           setMessages(prev =>
@@ -306,7 +315,7 @@ Select a research mode above or choose a standard mission inquiry below to begin
               m.id === assistantMsgId
                 ? {
                     ...m,
-                    content: m.content ? m.content : `Synthesis error: ${err.message || 'Stream disconnected'}.`,
+                    content: m.content ? m.content : `Scientific retrieval error: ${err.message || 'Stream interrupted'}.`,
                     status: 'error'
                   }
                 : m
@@ -320,351 +329,256 @@ Select a research mode above or choose a standard mission inquiry below to begin
     );
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const handleTextareaInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+    e.target.style.height = 'auto';
+    e.target.style.height = `${Math.min(e.target.scrollHeight, 180)}px`;
+  };
+
   return (
-    <div className="h-[calc(100vh-7.5rem)] flex flex-col max-w-7xl mx-auto space-y-3">
-      {/* ── Top Header & Mode Switcher ────────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-[#1E3442] pb-3">
-        <div className="flex items-center gap-3.5">
-          <img
-            src="/flamelens-logo.png"
-            alt="FlameLens AI"
-            className="w-10 h-10 object-contain drop-shadow-[0_0_12px_rgba(34,211,238,0.5)] flex-shrink-0"
-          />
-          <div>
-            <div className="flex items-center space-x-2">
-              <span className="px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800 text-[10px] font-mono tracking-wider font-semibold">
-                NASA RESEARCH COPILOT
-              </span>
-              <span className="text-xs font-mono text-slate-400">GROUNDED GEMINI RAG • FTS5 RETRIEVAL</span>
-            </div>
-            <h1 className="text-xl font-bold text-white tracking-tight mt-0.5">
-              AI Scientific Copilot
-            </h1>
-          </div>
+    <div className="flex flex-col h-full bg-white relative">
+      {/* ── TOP MODE SELECTION BAR ────────────────────────────────────── */}
+      <div className="border-b border-[#E5E5E5] px-4 py-2 flex items-center justify-between bg-white z-10 shrink-0">
+        <div className="flex items-center space-x-1.5">
+          {MODES.map((m) => {
+            const Icon = m.icon;
+            const isSelected = activeMode === m.id;
+            return (
+              <button
+                key={m.id}
+                onClick={() => setActiveMode(m.id)}
+                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-[7px] text-[12px] font-medium transition-colors ${
+                  isSelected
+                    ? 'bg-[#F0F0F0] text-[#272727]'
+                    : 'text-[#6B6B6B] hover:text-[#272727] hover:bg-[#F7F7F8]'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span>{m.label}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Action Controls & Model Telemetry */}
-        <div className="flex items-center gap-2 text-xs font-mono">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0E1821] border border-[#1E3442] text-slate-300">
-            <Cpu className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="text-[11px] text-cyan-300 font-semibold">{activeModel}</span>
-          </div>
-
-          <button
-            onClick={handleClear}
-            title="Clear Chat History"
-            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#0E1821] hover:bg-[#13212C] border border-[#1E3442] text-slate-400 hover:text-rose-300 transition-colors"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-            <span className="text-[11px]">Clear</span>
-          </button>
-        </div>
-      </div>
-
-      {/* ── Mode Selection Segmented Bar ──────────────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-        {(Object.keys(MODE_CONFIGS) as AIMode[]).map((modeKey) => {
-          const cfg = MODE_CONFIGS[modeKey];
-          const isSelected = activeMode === modeKey;
-          const Icon = cfg.icon;
-
-          return (
+        <div className="flex items-center space-x-2 text-xs text-[#8A8A8A]">
+          <span className="hidden sm:inline font-mono text-[11px]">NASA RAG Grounding</span>
+          {messages.length > 0 && (
             <button
-              key={modeKey}
-              onClick={() => setActiveMode(modeKey)}
-              className={`p-2.5 rounded-xl border text-left transition-all ${
-                isSelected
-                  ? cfg.color
-                  : 'bg-[#0E1821] border-[#1E3442] text-slate-400 hover:bg-[#13212C] hover:text-slate-200'
-              }`}
+              onClick={() => {
+                if (isStreaming) handleStopStream();
+                setMessages([]);
+                setSessionId(`SES-${Date.now().toString(36).toUpperCase()}`);
+              }}
+              className="p-1 rounded hover:bg-[#F0F0F0] text-[#6B6B6B] hover:text-[#272727] transition-colors"
+              title="Reset conversation"
             >
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-mono font-bold tracking-wider">{cfg.badge}</span>
-                <Icon className="w-3.5 h-3.5 opacity-80" />
-              </div>
-              <div className="font-semibold text-xs text-white mb-0.5">{cfg.label}</div>
-              <p className="text-[10px] font-mono text-slate-400 line-clamp-1">{cfg.desc}</p>
+              <RotateCcw className="w-3.5 h-3.5" />
             </button>
-          );
-        })}
+          )}
+        </div>
       </div>
 
-      {/* ── 3-Column Workspace Layout ─────────────────────────────────────── */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 min-h-0">
-        {/* Left Section: Session Controls & Suggested Questions (3 cols) */}
-        <div className="hidden lg:flex lg:col-span-3 flex-col justify-between p-3.5 rounded-xl bg-[#0E1821] border border-[#1E3442] overflow-y-auto space-y-4">
-          <div className="space-y-4">
-            <div>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block font-semibold mb-2">
-                ACTIVE SESSION
-              </span>
-              <div className="p-2.5 rounded-lg bg-[#0A1118] border border-[#1E3442] font-mono text-xs space-y-1">
-                <div className="flex justify-between text-slate-400 text-[10px]">
-                  <span>SESSION ID:</span>
-                  <span className="text-cyan-400 font-bold">{sessionId}</span>
-                </div>
-                <div className="flex justify-between text-slate-400 text-[10px]">
-                  <span>TURNS:</span>
-                  <span className="text-slate-200">{messages.length} messages</span>
-                </div>
+      {/* ── CONVERSATION THREAD AREA ───────────────────────────────────── */}
+      <div className="flex-1 overflow-y-auto px-4 py-6">
+        <div className="max-w-3xl mx-auto w-full">
+          {messages.length === 0 ? (
+            /* Empty State: ChatGPT Style Welcome */
+            <div className="py-16 sm:py-24 text-center space-y-8">
+              <div className="w-10 h-10 mx-auto rounded-full bg-[#242424] text-white flex items-center justify-center font-bold text-sm">
+                <span className="text-[#FF7139]">F</span>L
               </div>
-            </div>
 
-            <div>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block font-semibold mb-2">
-                SUGGESTED INQUIRIES
-              </span>
-              <div className="space-y-1.5">
-                {SUGGESTED_QUESTIONS[activeMode].map((sq, i) => (
+              <div className="space-y-2 max-w-lg mx-auto">
+                <h2 className="text-2xl font-semibold text-[#272727]">
+                  What would you like to understand?
+                </h2>
+                <p className="text-xs text-[#6B6B6B] leading-relaxed">
+                  Ask about NASA microgravity combustion kinetics, droplet extinction limits, spherical flame geometry, or spacecraft fire safety.
+                </p>
+              </div>
+
+              {/* Starter Question Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-2xl mx-auto text-left pt-2">
+                {STARTER_PROMPTS[activeMode].map((prompt, i) => (
                   <button
                     key={i}
-                    onClick={() => handleSendMessage(sq)}
-                    disabled={isStreaming}
-                    className="w-full text-left p-2 rounded-lg bg-[#0A1118] hover:bg-[#13212C] border border-[#1E3442] hover:border-cyan-500/50 text-[11px] font-mono text-slate-300 hover:text-cyan-300 transition-all flex items-start space-x-1.5 group"
+                    onClick={() => handleSendMessage(prompt)}
+                    className="p-3 bg-white border border-[#E5E5E5] hover:border-[#D4D4D4] hover:bg-[#F9F9FA] rounded-[9px] text-xs text-[#444444] transition-colors leading-snug flex flex-col justify-between"
                   >
-                    <ChevronRight className="w-3.5 h-3.5 text-cyan-500 flex-shrink-0 mt-0.5 group-hover:translate-x-0.5 transition-transform" />
-                    <span className="line-clamp-2">{sq}</span>
+                    <span>{prompt}</span>
+                    <span className="text-[10px] text-[#8A8A8A] font-mono mt-2">NASA Open Data</span>
                   </button>
                 ))}
               </div>
             </div>
-          </div>
-
-          {/* NASA Disclaimer */}
-          <div className="p-2.5 rounded-lg bg-[#05090D] border border-[#1E3442] text-[10px] font-mono text-slate-500 space-y-1">
-            <span className="text-cyan-400 font-bold block uppercase">TRUTH-GROUNDING:</span>
-            <p>Every response is verified against the indexed SQLite FTS5 NASA dataset.</p>
-          </div>
-        </div>
-
-        {/* Center Section: Message Feed & Chat Input (6 cols) */}
-        <div className="lg:col-span-6 flex flex-col justify-between rounded-xl bg-[#0E1821] border border-[#1E3442] overflow-hidden">
-          {/* Scrollable Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((msg) => {
-              const isUser = msg.role === 'user';
-              const cfg = MODE_CONFIGS[msg.mode || activeMode];
-
-              return (
-                <div
-                  key={msg.id}
-                  className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
-                >
-                  <div
-                    className={`max-w-2xl rounded-xl p-4 space-y-3 border transition-all ${
-                      isUser
-                        ? 'bg-[#13212C] border-cyan-500/50 text-cyan-100 shadow-glow-cyan'
-                        : 'bg-[#0A1118] border-[#1E3442] text-slate-200'
-                    }`}
-                  >
-                    {/* Header */}
-                    <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 border-b border-[#1E3442]/60 pb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-white flex items-center gap-1.5">
-                          {isUser ? (
-                            <>👤 FLIGHT RESEARCHER</>
-                          ) : (
-                            <>
-                              <img
-                                src="/flamelens-logo.png"
-                                alt="FlameLens Copilot"
-                                className="w-4 h-4 object-contain inline-block drop-shadow-[0_0_8px_rgba(34,211,238,0.7)]"
-                              />
-                              <span>FLAMELENS SCIENTIFIC COPILOT</span>
-                            </>
-                          )}
-                        </span>
-                        {!isUser && msg.mode && (
-                          <span className="px-1.5 py-0.2 rounded bg-[#0E1821] text-cyan-400 border border-[#1E3442] text-[9px]">
-                            {cfg.badge}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <span>{msg.timestamp}</span>
-                        {!isUser && msg.content && (
-                          <button
-                            onClick={() => handleCopy(msg.content, msg.id)}
-                            className="text-slate-400 hover:text-cyan-300 transition-colors flex items-center gap-1"
-                            title="Copy Response"
-                          >
-                            {copiedId === msg.id ? (
-                              <Check className="w-3 h-3 text-emerald-400" />
-                            ) : (
-                              <Copy className="w-3 h-3" />
-                            )}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Content */}
+          ) : (
+            /* Active Message History */
+            <div className="space-y-6 pb-28">
+              {messages.map((msg) => {
+                const isUser = msg.role === 'user';
+                return (
+                  <div key={msg.id} className="space-y-2">
                     {isUser ? (
-                      <p className="font-mono text-xs leading-relaxed text-cyan-100 whitespace-pre-line">
-                        {msg.content}
-                      </p>
-                    ) : (
-                      <div>
-                        <FormattedScientificContent content={msg.content} />
-                        {msg.status === 'streaming' && (
-                          <span className="inline-block w-2 h-4 bg-cyan-400 ml-1 animate-pulse align-middle" />
-                        )}
+                      /* User message: clean light grey bubble aligned right */
+                      <div className="flex justify-end">
+                        <div className="max-w-[85%] bg-[#F4F4F4] text-[#272727] rounded-[18px] px-4 py-2.5 text-[14px] leading-relaxed">
+                          {msg.content}
+                        </div>
                       </div>
-                    )}
-
-                    {/* Citations under assistant answer */}
-                    {!isUser && msg.sources && msg.sources.length > 0 && (
-                      <div className="mt-3 pt-3 border-t border-[#1E3442] space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono font-semibold text-cyan-400 flex items-center gap-1.5 uppercase">
-                            <BookOpen className="w-3.5 h-3.5 text-cyan-400" />
-                            <span>VERIFIED NASA CITATIONS ({msg.sources.length}):</span>
-                          </span>
-                          <span className="text-[9px] font-mono text-slate-500">PEER-REVIEWED</span>
+                    ) : (
+                      /* Assistant message: clean typography directly on white */
+                      <div className="space-y-3 pt-2">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-5 h-5 rounded-[4px] bg-[#242424] text-white flex items-center justify-center font-bold text-[10px]">
+                            FL
+                          </div>
+                          <span className="text-xs font-semibold text-[#272727]">FlameLens Intelligence</span>
+                          <span className="text-[11px] font-mono text-[#8A8A8A]">{msg.timestamp}</span>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-1.5">
-                          {msg.sources.map((s, idx) => (
-                            <div
-                              key={idx}
-                              className="p-2 rounded-lg bg-[#05090D] border border-[#1E3442] flex items-center justify-between text-[11px] font-mono group hover:border-cyan-500/50 transition-colors"
-                            >
-                              <div className="truncate pr-2">
-                                <span className="text-cyan-400 font-bold mr-1.5">[{idx + 1}]</span>
-                                <span className="text-slate-300 font-semibold">{s.title}</span>
-                              </div>
-                              {s.url && (
-                                <a
-                                  href={s.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 flex-shrink-0"
+                        <div className="pl-7">
+                          {msg.content ? (
+                            <FormattedMessage content={msg.content} />
+                          ) : (
+                            <div className="flex items-center space-x-1.5 py-2 text-xs text-[#8A8A8A]">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#B86B39] animate-pulse" />
+                              <span>Searching NASA technical archives & synthesizing...</span>
+                            </div>
+                          )}
+
+                          {/* Action Bar (Copy, Sources, Citations) */}
+                          {msg.status !== 'streaming' && msg.content && (
+                            <div className="pt-3 flex flex-wrap items-center gap-3 text-xs text-[#8A8A8A]">
+                              <button
+                                onClick={() => handleCopy(msg.content, msg.id)}
+                                className="inline-flex items-center space-x-1 hover:text-[#272727] transition-colors"
+                              >
+                                {copiedId === msg.id ? (
+                                  <>
+                                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                    <span className="text-emerald-600">Copied</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Copy className="w-3.5 h-3.5" />
+                                    <span>Copy</span>
+                                  </>
+                                )}
+                              </button>
+
+                              {msg.sources && msg.sources.length > 0 && (
+                                <button
+                                  onClick={() =>
+                                    setExpandedSourcesId(expandedSourcesId === msg.id ? null : msg.id)
+                                  }
+                                  className="inline-flex items-center space-x-1 text-[#B86B39] hover:underline"
                                 >
-                                  <span>Archive</span>
-                                  <ExternalLink className="w-3 h-3" />
-                                </a>
+                                  <BookOpen className="w-3.5 h-3.5" />
+                                  <span>{msg.sources.length} NASA Sources</span>
+                                  <ChevronDown
+                                    className={`w-3 h-3 transition-transform ${
+                                      expandedSourcesId === msg.id ? 'rotate-180' : ''
+                                    }`}
+                                  />
+                                </button>
                               )}
                             </div>
-                          ))}
+                          )}
+
+                          {/* Expanded Sources Panel */}
+                          {expandedSourcesId === msg.id && msg.sources && (
+                            <div className="mt-3 p-3 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px] space-y-2">
+                              <div className="text-[11px] font-semibold text-[#6B6B6B] uppercase tracking-wide">
+                                Verified References Grounding This Answer
+                              </div>
+                              <div className="space-y-1.5">
+                                {msg.sources.map((src, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="p-2 bg-white border border-[#E5E5E5] rounded-[6px] text-xs flex items-center justify-between"
+                                  >
+                                    <div>
+                                      <span className="font-mono text-[10px] font-semibold text-[#B86B39] mr-2">
+                                        [{idx + 1}] {src.source_id}
+                                      </span>
+                                      <span className="font-medium text-[#272727]">{src.title}</span>
+                                    </div>
+                                    {src.url && (
+                                      <a
+                                        href={src.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-[#6B6B6B] hover:text-[#272727] shrink-0 ml-2"
+                                      >
+                                        <ExternalLink className="w-3.5 h-3.5" />
+                                      </a>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
                   </div>
-                </div>
-              );
-            })}
-            <div ref={messagesEndRef} />
-          </div>
+                );
+              })}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
+        </div>
+      </div>
 
-          {/* Bottom Chat Input Form */}
-          <div className="p-3 bg-[#0A1118] border-t border-[#1E3442]">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSendMessage();
-              }}
-              className="flex items-center gap-2"
-            >
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about microgravity combustion, spherical flames, or spacecraft fire safety..."
-                disabled={isStreaming}
-                className="flex-1 bg-[#05090D] border border-[#1E3442] focus:border-cyan-500 rounded-xl px-4 py-2.5 text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none"
-              />
+      {/* ── STICKY CENTERED INPUT COMPOSER ─────────────────────────────── */}
+      <div className="sticky bottom-0 bg-white/95 backdrop-blur-xs border-t border-[#E5E5E5]/60 pt-2 pb-4 px-4 z-20">
+        <div className="max-w-3xl mx-auto w-full">
+          <div className="relative flex items-end bg-white border border-[#E5E5E5] rounded-[18px] shadow-xs focus-within:border-[#242424] focus-within:ring-1 focus-within:ring-[#242424] transition-all p-2">
+            <textarea
+              ref={textareaRef}
+              rows={1}
+              value={input}
+              onChange={handleTextareaInput}
+              onKeyDown={handleKeyDown}
+              placeholder={MODES.find(m => m.id === activeMode)?.placeholder || 'Ask a research question...'}
+              className="flex-1 bg-transparent border-none text-[14px] text-[#272727] placeholder:text-[#8A8A8A] focus:outline-none resize-none px-2 py-1 max-h-44 leading-relaxed"
+            />
 
+            <div className="flex items-center space-x-1 shrink-0 pb-0.5">
               {isStreaming ? (
                 <button
                   type="button"
                   onClick={handleStopStream}
-                  className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-mono font-semibold flex items-center gap-1.5 transition-colors"
+                  className="p-2 rounded-full bg-[#242424] text-white hover:bg-[#383838] transition-colors"
+                  aria-label="Stop generation"
                 >
                   <Square className="w-3.5 h-3.5 fill-current" />
-                  <span>STOP</span>
                 </button>
               ) : (
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={() => handleSendMessage()}
                   disabled={!input.trim()}
-                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-cyan-700 hover:from-cyan-500 hover:to-cyan-600 disabled:opacity-40 text-white text-xs font-mono font-semibold flex items-center gap-1.5 shadow-glow-cyan transition-all"
+                  className="p-2 rounded-full bg-[#242424] text-white hover:bg-[#383838] disabled:opacity-30 disabled:hover:bg-[#242424] transition-colors"
+                  aria-label="Send message"
                 >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>SEND</span>
+                  <ArrowUp className="w-4 h-4" />
                 </button>
               )}
-            </form>
-          </div>
-        </div>
-
-        {/* Right Section: Telemetry & Citation Inspector (3 cols) */}
-        <div className="hidden lg:flex lg:col-span-3 flex-col justify-between p-3.5 rounded-xl bg-[#0E1821] border border-[#1E3442] overflow-y-auto space-y-4">
-          <div className="space-y-4">
-            <div>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 block font-semibold mb-2 flex items-center gap-1.5">
-                <Database className="w-3.5 h-3.5 text-cyan-400" />
-                <span>GROUNDED EVIDENCE CITATIONS</span>
-              </span>
-
-              {latestSources.length > 0 ? (
-                <div className="space-y-2">
-                  {latestSources.map((src, i) => (
-                    <div key={i} className="p-2.5 rounded-lg bg-[#0A1118] border border-[#1E3442] space-y-1">
-                      <div className="flex items-center justify-between text-[10px] font-mono">
-                        <span className="text-cyan-400 font-bold">{src.source_id || 'NASA'}</span>
-                        <span className="text-emerald-400">VERIFIED</span>
-                      </div>
-                      <h5 className="text-[11px] font-semibold text-slate-200 line-clamp-2">{src.title}</h5>
-                      {src.url && (
-                        <a
-                          href={src.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[10px] font-mono text-cyan-400 hover:text-cyan-300 flex items-center gap-1 pt-1"
-                        >
-                          <span>Open Repository</span>
-                          <ExternalLink className="w-2.5 h-2.5" />
-                        </a>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="p-3 rounded-lg bg-[#0A1118] border border-[#1E3442] text-xs font-mono text-slate-500 text-center">
-                  Citations will populate dynamically when you submit a question.
-                </div>
-              )}
-            </div>
-
-            {/* Hardware Telemetry Card */}
-            <div>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block font-semibold mb-2">
-                FLIGHT HARDWARE TELEMETRY
-              </span>
-              <div className="p-3 rounded-lg bg-[#0A1118] border border-[#1E3442] font-mono text-xs space-y-2">
-                <div className="flex justify-between items-center text-slate-400">
-                  <span>FACILITY:</span>
-                  <span className="text-cyan-400 font-bold">ISS CIR</span>
-                </div>
-                <div className="flex justify-between items-center text-slate-400">
-                  <span>CHAMBER:</span>
-                  <span className="text-slate-200">100-Liter Vessel</span>
-                </div>
-                <div className="flex justify-between items-center text-slate-400">
-                  <span>MICROGRAVITY:</span>
-                  <span className="text-emerald-400 font-bold">10⁻⁶ g</span>
-                </div>
-                <div className="flex justify-between items-center text-slate-400">
-                  <span>REPOSITORIES:</span>
-                  <span className="text-slate-200">28 Connected</span>
-                </div>
-              </div>
             </div>
           </div>
 
-          <div className="p-2.5 rounded-lg bg-[#05090D] border border-[#1E3442] text-[10px] font-mono text-slate-500">
-            <span>LLM: Gemini 2.5 Flash • Context: FTS5 BM25</span>
+          <div className="text-center pt-2">
+            <span className="text-[11px] text-[#8A8A8A]">
+              FlameLens AI answers are grounded in NASA Glenn Research Center and Physical Sciences Informatics data.
+            </span>
           </div>
         </div>
       </div>
