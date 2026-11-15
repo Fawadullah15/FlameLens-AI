@@ -83,13 +83,13 @@ export const Experiments: React.FC = () => {
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         {/* Search */}
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8F8F8F]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8F8F8F] pointer-events-none" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search experiment ID, fuel, platform..."
-            className="input-standard w-full pl-9"
+            className="input-standard input-with-icon w-full pl-9"
           />
         </div>
 
@@ -98,7 +98,7 @@ export const Experiments: React.FC = () => {
           <div className="inline-flex items-center p-1 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[9px] text-xs font-medium">
             <button
               onClick={() => setGravityFilter('all')}
-              className={`px-3 py-1 rounded-[6px] transition-colors ${
+              className={`px-3 py-1 rounded-[6px] transition-colors whitespace-nowrap ${
                 gravityFilter === 'all' ? 'bg-white text-[#0D0D0D] shadow-2xs font-semibold' : 'text-[#6E6E6E] hover:text-[#0D0D0D]'
               }`}
             >
@@ -106,7 +106,7 @@ export const Experiments: React.FC = () => {
             </button>
             <button
               onClick={() => setGravityFilter('0')}
-              className={`px-3 py-1 rounded-[6px] transition-colors ${
+              className={`px-3 py-1 rounded-[6px] transition-colors whitespace-nowrap ${
                 gravityFilter === '0' ? 'bg-white text-[#0D0D0D] shadow-2xs font-semibold' : 'text-[#6E6E6E] hover:text-[#0D0D0D]'
               }`}
             >
@@ -114,7 +114,7 @@ export const Experiments: React.FC = () => {
             </button>
             <button
               onClick={() => setGravityFilter('1')}
-              className={`px-3 py-1 rounded-[6px] transition-colors ${
+              className={`px-3 py-1 rounded-[6px] transition-colors whitespace-nowrap ${
                 gravityFilter === '1' ? 'bg-white text-[#0D0D0D] shadow-2xs font-semibold' : 'text-[#6E6E6E] hover:text-[#0D0D0D]'
               }`}
             >
@@ -137,17 +137,17 @@ export const Experiments: React.FC = () => {
       {/* ── STANDARDIZED DATA TABLE ──────────────────────────────────────── */}
       <div className="table-shell shadow-2xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[960px]">
             <thead>
               <tr>
-                <th className="table-header-cell font-mono w-32">Experiment ID</th>
-                <th className="table-header-cell">Fuel & Initial Diameter</th>
-                <th className="table-header-cell w-36">Environment</th>
-                <th className="table-header-cell font-mono w-28">Pressure</th>
-                <th className="table-header-cell font-mono w-32">Burn Rate K</th>
-                <th className="table-header-cell w-28">Extinction</th>
-                <th className="table-header-cell w-24">Platform</th>
-                <th className="table-header-cell text-right w-28">Actions</th>
+                <th className="table-header-cell font-mono w-32 whitespace-nowrap">Experiment ID</th>
+                <th className="table-header-cell min-w-[200px]">Fuel & Initial Diameter</th>
+                <th className="table-header-cell w-36 whitespace-nowrap">Environment</th>
+                <th className="table-header-cell font-mono w-28 whitespace-nowrap">Pressure</th>
+                <th className="table-header-cell font-mono w-32 whitespace-nowrap">Burn Rate K</th>
+                <th className="table-header-cell w-28 whitespace-nowrap">Extinction</th>
+                <th className="table-header-cell w-24 whitespace-nowrap">Platform</th>
+                <th className="table-header-cell text-right w-28 whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -170,16 +170,16 @@ export const Experiments: React.FC = () => {
                     onClick={() => setSelectedExp(exp)}
                     className="hover:bg-[#F9F9FA] cursor-pointer transition-colors"
                   >
-                    <td className="table-body-cell font-mono text-xs font-semibold text-[#B86B39]">
+                    <td className="table-body-cell font-mono text-xs font-semibold text-[#B86B39] whitespace-nowrap">
                       {exp.experiment_id}
                     </td>
-                    <td className="table-body-cell">
+                    <td className="table-body-cell min-w-[200px]">
                       <div className="font-medium text-[#0D0D0D]">{exp.fuel_type}</div>
                       <div className="text-[11px] font-mono text-[#8F8F8F]">
                         d₀ = {exp.initial_fuel_diameter_mm ? `${exp.initial_fuel_diameter_mm.toFixed(2)} mm` : '1.50 mm'}
                       </div>
                     </td>
-                    <td className="table-body-cell text-xs text-[#555555]">
+                    <td className="table-body-cell text-xs text-[#555555] whitespace-nowrap">
                       <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-mono font-medium mr-1.5 ${
                         exp.gravity_level === 0 ? 'bg-[#F8F1EC] text-[#B86B39] border border-[#EBDAD0]' : 'bg-[#F0F0F0] text-[#555555]'
                       }`}>
@@ -187,19 +187,19 @@ export const Experiments: React.FC = () => {
                       </span>
                       <span>{exp.ambient_o2_percent ?? 21}% O₂</span>
                     </td>
-                    <td className="table-body-cell font-mono text-xs text-[#555555]">
+                    <td className="table-body-cell font-mono text-xs text-[#555555] whitespace-nowrap">
                       {exp.chamber_pressure_kpa ? `${(exp.chamber_pressure_kpa / 101.325).toFixed(2)} atm` : '1.00 atm'}
                     </td>
-                    <td className="table-body-cell font-mono text-xs font-semibold text-[#0D0D0D]">
+                    <td className="table-body-cell font-mono text-xs font-semibold text-[#0D0D0D] whitespace-nowrap">
                       {exp.burning_rate_constant_k ? `${exp.burning_rate_constant_k.toFixed(3)} mm²/s` : '—'}
                     </td>
-                    <td className="table-body-cell text-xs text-[#6E6E6E]">
+                    <td className="table-body-cell text-xs text-[#6E6E6E] whitespace-nowrap">
                       {exp.extinction_mode || 'Radiative'}
                     </td>
-                    <td className="table-body-cell text-xs text-[#8F8F8F]">
+                    <td className="table-body-cell text-xs text-[#8F8F8F] whitespace-nowrap">
                       {exp.mission_platform || exp.series || 'ISS CIR'}
                     </td>
-                    <td className="table-body-cell text-right" onClick={(e) => e.stopPropagation()}>
+                    <td className="table-body-cell text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end space-x-2">
                         <Link
                           to={`/combustion?experimentId=${exp.experiment_id}`}

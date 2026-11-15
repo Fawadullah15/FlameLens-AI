@@ -129,6 +129,10 @@
   color: #0D0D0D;
   transition: border-color 140ms ease, box-shadow 140ms ease;
 }
+.input-standard.input-with-icon,
+.input-with-icon {
+  padding-left: 2.375rem !important; /* 38px clearance for search icon at left-3 */
+}
 .input-standard::placeholder {
   color: #8F8F8F;
 }
@@ -227,6 +231,7 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 0.625rem 1rem;
+  white-space: nowrap;
 }
 
 .table-body-cell {

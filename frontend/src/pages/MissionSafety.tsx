@@ -153,15 +153,15 @@ export const MissionSafety: React.FC<MissionSafetyProps> = ({ defaultTab = 'risk
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-[13px]">
+              <table className="w-full text-left border-collapse text-[13px] min-w-[760px]">
                 <thead>
                   <tr>
-                    <th className="table-header-cell">Fuel / Material</th>
-                    <th className="table-header-cell font-mono w-28">Risk Score</th>
-                    <th className="table-header-cell w-32">Classification</th>
-                    <th className="table-header-cell font-mono w-32">LOI (O₂ %)</th>
-                    <th className="table-header-cell w-36">Soot Hazard</th>
-                    <th className="table-header-cell text-right w-28">Actions</th>
+                    <th className="table-header-cell min-w-[180px] whitespace-nowrap">Fuel / Material</th>
+                    <th className="table-header-cell font-mono w-28 whitespace-nowrap">Risk Score</th>
+                    <th className="table-header-cell w-32 whitespace-nowrap">Classification</th>
+                    <th className="table-header-cell font-mono w-32 whitespace-nowrap">LOI (O₂ %)</th>
+                    <th className="table-header-cell w-36 whitespace-nowrap">Soot Hazard</th>
+                    <th className="table-header-cell text-right w-28 whitespace-nowrap">Actions</th>
                   </tr>
                 </thead>
                 <tbody>

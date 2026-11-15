@@ -77,13 +77,13 @@ export const ResearchExplorer: React.FC = () => {
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         {/* Search Bar */}
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8F8F8F]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8F8F8F] pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search papers, authors, report numbers..."
-            className="input-standard w-full pl-9"
+            className="input-standard input-with-icon w-full pl-9"
           />
         </div>
 
@@ -111,16 +111,16 @@ export const ResearchExplorer: React.FC = () => {
       {/* ── STANDARDIZED DATA TABLE ──────────────────────────────────────── */}
       <div className="table-shell shadow-2xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[880px]">
             <thead>
               <tr>
-                <th className="table-header-cell font-mono w-28">Doc ID</th>
-                <th className="table-header-cell">Title & Authors</th>
-                <th className="table-header-cell w-28">Series</th>
-                <th className="table-header-cell w-36">Category</th>
-                <th className="table-header-cell font-mono w-20">Year</th>
-                <th className="table-header-cell w-24">Source</th>
-                <th className="table-header-cell text-right w-20">Action</th>
+                <th className="table-header-cell font-mono w-32 whitespace-nowrap">Doc ID</th>
+                <th className="table-header-cell min-w-[280px]">Title & Authors</th>
+                <th className="table-header-cell w-28 whitespace-nowrap">Series</th>
+                <th className="table-header-cell w-40 whitespace-nowrap">Category</th>
+                <th className="table-header-cell font-mono w-16 text-center whitespace-nowrap">Year</th>
+                <th className="table-header-cell w-36 whitespace-nowrap">Source</th>
+                <th className="table-header-cell text-right w-24 whitespace-nowrap">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -145,38 +145,43 @@ export const ResearchExplorer: React.FC = () => {
                       selectedPaper?.doc_id === doc.doc_id ? 'bg-[#F8F1EC]/40' : ''
                     }`}
                   >
-                    <td className="table-body-cell font-mono text-xs font-semibold text-[#B86B39]">
+                    <td className="table-body-cell font-mono text-xs font-semibold text-[#B86B39] whitespace-nowrap">
                       {doc.doc_id}
                     </td>
-                    <td className="table-body-cell max-w-md">
-                      <div className="font-medium text-[#0D0D0D] leading-snug">
+                    <td className="table-body-cell">
+                      <div className="font-medium text-[#0D0D0D] leading-snug line-clamp-2">
                         {doc.title}
                       </div>
-                      <div className="text-[11px] text-[#8F8F8F] mt-0.5 truncate">
+                      <div className="text-[11px] text-[#8F8F8F] mt-0.5 truncate max-w-lg">
                         {doc.authors || 'NASA Glenn Research Center'} • {doc.publication_venue || 'Technical Memorandum'}
                       </div>
                     </td>
-                    <td className="table-body-cell text-xs font-mono text-[#555555]">
+                    <td className="table-body-cell text-xs font-mono text-[#555555] whitespace-nowrap">
                       {doc.series_tags || 'CIR'}
                     </td>
-                    <td className="table-body-cell text-xs text-[#6E6E6E]">
-                      <span className="px-2 py-0.5 rounded bg-[#F7F7F8] border border-[#E5E5E5] text-[11px]">
+                    <td className="table-body-cell text-xs text-[#6E6E6E] whitespace-nowrap">
+                      <span className="px-2 py-0.5 rounded bg-[#F7F7F8] border border-[#E5E5E5] text-[11px] whitespace-nowrap inline-block">
                         {doc.category || 'Combustion'}
                       </span>
                     </td>
-                    <td className="table-body-cell font-mono text-xs text-[#555555]">
+                    <td className="table-body-cell font-mono text-xs text-[#555555] text-center whitespace-nowrap">
                       {doc.publication_year}
                     </td>
-                    <td className="table-body-cell text-xs text-[#8F8F8F]">
-                      {doc.source_id || 'NTRS'}
+                    <td className="table-body-cell text-xs text-[#6E6E6E] whitespace-nowrap">
+                      <span
+                        className="font-mono text-[11px] px-1.5 py-0.5 rounded bg-[#F7F7F8] border border-[#E5E5E5] inline-block truncate max-w-[140px] align-middle"
+                        title={doc.source_id}
+                      >
+                        {doc.source_id ? doc.source_id.replace(/^SRC-/, '') : 'NASA NTRS'}
+                      </span>
                     </td>
-                    <td className="table-body-cell text-right">
+                    <td className="table-body-cell text-right whitespace-nowrap">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedPaper(doc);
                         }}
-                        className="inline-flex items-center space-x-1 text-xs font-medium text-[#0D0D0D] hover:text-[#B86B39]"
+                        className="inline-flex items-center space-x-1 text-xs font-medium text-[#0D0D0D] hover:text-[#B86B39] transition-colors"
                       >
                         <span>View</span>
                         <ChevronRight className="w-3.5 h-3.5" />

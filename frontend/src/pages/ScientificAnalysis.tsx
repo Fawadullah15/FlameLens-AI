@@ -192,7 +192,7 @@ export const ScientificAnalysis: React.FC = () => {
           </h3>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-[13px]">
+          <table className="w-full text-left border-collapse text-[13px] min-w-[620px]">
             <thead>
               <tr>
                 <th className="table-header-cell">Parameter</th>
