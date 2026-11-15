@@ -3,7 +3,12 @@ import {
   ShieldCheck,
   Sun,
   Check,
-  RotateCcw
+  RotateCcw,
+  Key,
+  Eye,
+  EyeOff,
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
 
 export const Settings: React.FC = () => {
@@ -11,6 +16,64 @@ export const Settings: React.FC = () => {
   const [temperature, setTemperature] = useState(0.2);
   const [docRetrievalK, setDocRetrievalK] = useState(5);
   const [cacheCleared, setCacheCleared] = useState(false);
+
+  const [geminiKey, setGeminiKey] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('flamelens_gemini_api_key') || '';
+    }
+    return '';
+  });
+  const [showKey, setShowKey] = useState(false);
+  const [keyStatus, setKeyStatus] = useState<'idle' | 'testing' | 'valid' | 'invalid'>('idle');
+  const [keyMessage, setKeyMessage] = useState<string>('');
+
+  const handleTestKey = async () => {
+    if (!geminiKey.trim()) return;
+    setKeyStatus('testing');
+    setKeyMessage('');
+    try {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey.trim()}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: 'Hello' }] }] })
+        }
+      );
+      if (res.ok) {
+        setKeyStatus('valid');
+        setKeyMessage('Gemini 2.5 Flash API connection verified successfully!');
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('flamelens_gemini_api_key', geminiKey.trim());
+        }
+      } else {
+        setKeyStatus('invalid');
+        const errData = await res.json().catch(() => ({}));
+        setKeyMessage(errData.error?.message || `HTTP ${res.status}: Invalid API Key`);
+      }
+    } catch (err: any) {
+      setKeyStatus('invalid');
+      setKeyMessage(err.message || 'Network connection failed');
+    }
+  };
+
+  const handleSaveKey = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('flamelens_gemini_api_key', geminiKey.trim());
+      setKeyStatus('valid');
+      setKeyMessage('API Key saved to browser local storage.');
+      setTimeout(() => setKeyMessage(''), 3000);
+    }
+  };
+
+  const handleClearKey = () => {
+    setGeminiKey('');
+    setKeyStatus('idle');
+    setKeyMessage('');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('flamelens_gemini_api_key');
+    }
+  };
 
   const handleClearCache = () => {
     localStorage.clear();
@@ -103,7 +166,98 @@ export const Settings: React.FC = () => {
 
           {activeTab === 'ai' && (
             <div className="p-6 bg-white border border-[#E5E5E5] rounded-[10px] space-y-6 shadow-2xs">
+              {/* Gemini API Key Section */}
               <div>
+                <div className="flex items-center space-x-2">
+                  <Key className="w-4 h-4 text-[#B86B39]" />
+                  <h3 className="text-sm font-semibold text-[#0D0D0D]">Google Gemini API Key (Direct Browser Inference)</h3>
+                </div>
+                <p className="text-xs text-[#6E6E6E] mt-1">
+                  Connect your Google Gemini API key to enable live, real-time Gemini 2.5 Flash research reasoning directly from your browser.
+                  Stored strictly in your local browser sandbox—never committed, logged, or sent to third-party servers.
+                </p>
+
+                <div className="mt-3 space-y-2">
+                  <div className="relative">
+                    <input
+                      type={showKey ? 'text' : 'password'}
+                      value={geminiKey}
+                      onChange={(e) => {
+                        setGeminiKey(e.target.value);
+                        setKeyStatus('idle');
+                      }}
+                      placeholder="AIzaSy..."
+                      className="input-standard w-full pr-20 font-mono text-xs"
+                    />
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center space-x-1">
+                      <button
+                        type="button"
+                        onClick={() => setShowKey(!showKey)}
+                        className="p-1 text-[#8F8F8F] hover:text-[#0D0D0D] transition-colors"
+                        title={showKey ? 'Hide key' : 'Show key'}
+                      >
+                        {showKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={handleTestKey}
+                      disabled={keyStatus === 'testing' || !geminiKey.trim()}
+                      className="btn-primary text-xs"
+                    >
+                      {keyStatus === 'testing' ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <span>Testing Connection...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Test & Save</span>
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleSaveKey}
+                      disabled={!geminiKey.trim()}
+                      className="btn-secondary text-xs"
+                    >
+                      <span>Save Key</span>
+                    </button>
+
+                    {geminiKey && (
+                      <button
+                        type="button"
+                        onClick={handleClearKey}
+                        className="btn-secondary text-xs text-red-600 hover:text-red-700"
+                      >
+                        <span>Remove Key</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {keyStatus === 'valid' && (
+                    <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-[6px] text-xs text-emerald-800 flex items-center space-x-2">
+                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span>{keyMessage || 'Gemini 2.5 Flash connected and active.'}</span>
+                    </div>
+                  )}
+
+                  {keyStatus === 'invalid' && (
+                    <div className="p-2.5 bg-red-50 border border-red-200 rounded-[6px] text-xs text-red-800 flex items-center space-x-2">
+                      <AlertCircle className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                      <span>{keyMessage || 'Validation failed. Check your API key.'}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-[#E5E5E5]">
                 <h3 className="text-sm font-semibold text-[#0D0D0D]">Temperature / Determinism</h3>
                 <p className="text-xs text-[#6E6E6E] mt-0.5">
                   Lower temperature enforces strict scientific fidelity and factual adherence to NASA flight records.

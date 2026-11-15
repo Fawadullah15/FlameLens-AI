@@ -7,7 +7,9 @@ import {
   Printer,
   ChevronRight,
   ShieldCheck,
-  Loader2
+  Loader2,
+  FileSpreadsheet,
+  FileCode
 } from 'lucide-react';
 import { api } from '../services/api';
 import { Experiment } from '../types';
@@ -74,6 +76,78 @@ export const ReportsFindings: React.FC = () => {
     }
   };
 
+  const handleDownloadCsv = () => {
+    const includedExps = experiments.filter(e => selectedIds.includes(e.experiment_id));
+    if (includedExps.length === 0) return;
+
+    const headers = [
+      'Experiment_ID',
+      'Series',
+      'Title',
+      'Fuel_Type',
+      'Fuel_Category',
+      'Gravity_Level_g',
+      'Burning_Rate_Constant_K_mm2_s',
+      'Peak_Flame_Temp_K',
+      'Soot_Volume_Fraction_ppm',
+      'Chamber_Pressure_kPa',
+      'Ambient_O2_Percent',
+      'Flame_Shape',
+      'Risk_Score',
+      'Risk_Level',
+      'Citation'
+    ];
+
+    const rows = includedExps.map(e => [
+      `"${e.experiment_id}"`,
+      `"${e.series}"`,
+      `"${(e.title || '').replace(/"/g, '""')}"`,
+      `"${e.fuel_type}"`,
+      `"${e.fuel_category}"`,
+      e.gravity_level,
+      e.burning_rate_constant_k ?? '',
+      e.peak_flame_temperature_k ?? '',
+      e.soot_volume_fraction_ppm ?? '',
+      e.chamber_pressure_kpa ?? '',
+      e.ambient_o2_percent ?? '',
+      `"${e.flame_shape || ''}"`,
+      e.risk_score ?? '',
+      `"${e.risk_level || ''}"`,
+      `"${(e.citation || '').replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${generatedReport?.report_id || 'FlameLens_Telemetry'}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadJson = () => {
+    const includedExps = experiments.filter(e => selectedIds.includes(e.experiment_id));
+    const payload = {
+      report_id: generatedReport?.report_id || `RPT-${Date.now().toString(36).toUpperCase()}`,
+      title: reportTitle,
+      mission_standard: 'NASA-STD-6001B Flammability Screening Matrix',
+      generated_at: new Date().toISOString(),
+      author: 'FlameLens AI Scientific Intelligence Platform',
+      experiment_count: includedExps.length,
+      experiments: includedExps,
+      markdown_content: generatedReport?.markdown_content || ''
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${generatedReport?.report_id || 'FlameLens_Report'}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const toggleSelect = (id: string) => {
     if (selectedIds.includes(id)) {
       if (selectedIds.length > 1) {
@@ -98,10 +172,11 @@ export const ReportsFindings: React.FC = () => {
         </div>
 
         {generatedReport && (
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={handleCopy}
               className="btn-secondary"
+              title="Copy markdown content to clipboard"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Copied' : 'Copy'}</span>
@@ -109,13 +184,31 @@ export const ReportsFindings: React.FC = () => {
             <button
               onClick={handleDownload}
               className="btn-secondary"
+              title="Download research report as Markdown (.md)"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>Download .md</span>
+              <span>.md</span>
+            </button>
+            <button
+              onClick={handleDownloadCsv}
+              className="btn-secondary"
+              title="Export experimental measurements matrix to CSV"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+              <span>CSV</span>
+            </button>
+            <button
+              onClick={handleDownloadJson}
+              className="btn-secondary"
+              title="Export structured flight telemetry as JSON"
+            >
+              <FileCode className="w-3.5 h-3.5 text-blue-600" />
+              <span>JSON</span>
             </button>
             <button
               onClick={() => window.print()}
               className="btn-primary"
+              title="Print report or export to PDF"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>Print / PDF</span>

@@ -28,6 +28,7 @@ yarn-error.log*
 *.db-journal
 *.db-wal
 *.db-shm
+backend/data/nasa_combustion.db
 
 # IDE & OS
 .vscode/

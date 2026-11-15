@@ -186,10 +186,31 @@ function renderInline(text: string): string {
 export const AICopilot: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeMode, setActiveMode] = useState<AIMode>('SCIENTIFIC_RESEARCH');
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [sessionId, setSessionId] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const savedSid = localStorage.getItem('flamelens_active_session_id');
+      if (savedSid) return savedSid;
+    }
+    return `SES-${Date.now().toString(36).toUpperCase()}`;
+  });
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    if (typeof window !== 'undefined') {
+      const savedSid = localStorage.getItem('flamelens_active_session_id');
+      if (savedSid) {
+        const savedMsgs = localStorage.getItem(`flamelens_chat_${savedSid}`);
+        if (savedMsgs) {
+          try {
+            return JSON.parse(savedMsgs);
+          } catch {
+            return [];
+          }
+        }
+      }
+    }
+    return [];
+  });
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
-  const [sessionId, setSessionId] = useState<string>(() => `SES-${Date.now().toString(36).toUpperCase()}`);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [expandedSourcesId, setExpandedSourcesId] = useState<string | null>(null);
 
@@ -198,14 +219,30 @@ export const AICopilot: React.FC = () => {
   const abortControllerRef = useRef<AbortController | null>(null);
   const hasAutoFired = useRef(false);
 
+  // Sync to local storage for persistence across tab switches / reloads
+  useEffect(() => {
+    if (typeof window !== 'undefined' && sessionId) {
+      localStorage.setItem('flamelens_active_session_id', sessionId);
+      // Only persist when not mid-stream with empty assistant turn
+      const completedMessages = messages.filter(m => m.status !== 'streaming' || m.content.length > 0);
+      if (completedMessages.length > 0) {
+        localStorage.setItem(`flamelens_chat_${sessionId}`, JSON.stringify(completedMessages));
+      }
+    }
+  }, [messages, sessionId]);
+
   // Initialize or handle query params
   useEffect(() => {
     const queryParam = searchParams.get('q');
     const newSession = searchParams.get('new');
 
     if (newSession === 'true') {
+      const freshId = `SES-${Date.now().toString(36).toUpperCase()}`;
       setMessages([]);
-      setSessionId(`SES-${Date.now().toString(36).toUpperCase()}`);
+      setSessionId(freshId);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('flamelens_active_session_id', freshId);
+      }
       setSearchParams({}, { replace: true });
       return;
     }
@@ -371,13 +408,19 @@ export const AICopilot: React.FC = () => {
             <button
               onClick={() => {
                 if (isStreaming) handleStopStream();
+                const newSid = `SES-${Date.now().toString(36).toUpperCase()}`;
+                if (typeof window !== 'undefined') {
+                  localStorage.removeItem(`flamelens_chat_${sessionId}`);
+                  localStorage.setItem('flamelens_active_session_id', newSid);
+                }
                 setMessages([]);
-                setSessionId(`SES-${Date.now().toString(36).toUpperCase()}`);
+                setSessionId(newSid);
               }}
-              className="p-1 rounded hover:bg-[#F0F0F0] text-[#6E6E6E] hover:text-[#0D0D0D] transition-colors"
-              title="Reset conversation"
+              className="p-1.5 rounded-[6px] hover:bg-[#F0F0F0] text-[#6E6E6E] hover:text-[#0D0D0D] transition-colors flex items-center space-x-1"
+              title="Reset conversation and start fresh session"
             >
               <RotateCcw className="w-3.5 h-3.5" />
+              <span className="text-[11px] font-medium hidden sm:inline">New Session</span>
             </button>
           )}
         </div>
