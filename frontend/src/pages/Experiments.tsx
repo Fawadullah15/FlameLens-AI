@@ -6,7 +6,10 @@ import {
   ChevronRight,
   X,
   MessageSquare,
-  ArrowRight
+  ArrowRight,
+  Flame,
+  GitCompare,
+  ExternalLink
 } from 'lucide-react';
 import { api } from '../services/api';
 import { Experiment } from '../types';
@@ -67,14 +70,18 @@ export const Experiments: React.FC = () => {
       {/* ── UNIFIED PAGE HEADER ─────────────────────────────────────────── */}
       <div className="page-header">
         <div>
+          <div className="flex items-center space-x-2 text-xs font-mono text-[#69B7FF] mb-1">
+            <FlaskConical className="w-4 h-4 text-[#2F82FF]" />
+            <span>NASA PHYSICAL SCIENCES INFORMATICS (PSI) DATASETS</span>
+          </div>
           <h1 className="page-title">Experiments Repository</h1>
           <p className="page-subtitle">
             Empirical combustion measurements from NASA Glenn Drop Towers and ISS CIR flight campaigns.
           </p>
         </div>
 
-        <div className="flex items-center space-x-2 text-xs font-mono text-[#8F8F8F]">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#10A37F]" />
+        <div className="flex items-center space-x-2 text-xs font-mono text-[#AAB6CA]">
+          <span className="w-2 h-2 rounded-full bg-[#38BDF8] shadow-[0_0_6px_#38BDF8]" />
           <span>{experiments.length} Experiments Verified</span>
         </div>
       </div>
@@ -83,7 +90,7 @@ export const Experiments: React.FC = () => {
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         {/* Search */}
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8F8F8F] pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#78869C] pointer-events-none" />
           <input
             type="text"
             value={search}
@@ -95,27 +102,27 @@ export const Experiments: React.FC = () => {
 
         {/* Filters */}
         <div className="flex items-center space-x-2 overflow-x-auto pb-1 sm:pb-0">
-          <div className="inline-flex items-center p-1 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[9px] text-xs font-medium">
+          <div className="inline-flex items-center p-1 bg-[#101B30]/80 border border-[rgba(120,165,255,0.2)] rounded-xl text-xs font-medium">
             <button
               onClick={() => setGravityFilter('all')}
-              className={`px-3 py-1 rounded-[6px] transition-colors whitespace-nowrap ${
-                gravityFilter === 'all' ? 'bg-white text-[#0D0D0D] shadow-2xs font-semibold' : 'text-[#6E6E6E] hover:text-[#0D0D0D]'
+              className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
+                gravityFilter === 'all' ? 'bg-[#1769FF] text-white shadow-[0_0_8px_rgba(47,130,255,0.5)] font-semibold' : 'text-[#AAB6CA] hover:text-white'
               }`}
             >
               All Gravities
             </button>
             <button
               onClick={() => setGravityFilter('0')}
-              className={`px-3 py-1 rounded-[6px] transition-colors whitespace-nowrap ${
-                gravityFilter === '0' ? 'bg-white text-[#0D0D0D] shadow-2xs font-semibold' : 'text-[#6E6E6E] hover:text-[#0D0D0D]'
+              className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
+                gravityFilter === '0' ? 'bg-[#1769FF] text-white shadow-[0_0_8px_rgba(47,130,255,0.5)] font-semibold' : 'text-[#AAB6CA] hover:text-white'
               }`}
             >
               0g Microgravity
             </button>
             <button
               onClick={() => setGravityFilter('1')}
-              className={`px-3 py-1 rounded-[6px] transition-colors whitespace-nowrap ${
-                gravityFilter === '1' ? 'bg-white text-[#0D0D0D] shadow-2xs font-semibold' : 'text-[#6E6E6E] hover:text-[#0D0D0D]'
+              className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
+                gravityFilter === '1' ? 'bg-[#1769FF] text-white shadow-[0_0_8px_rgba(47,130,255,0.5)] font-semibold' : 'text-[#AAB6CA] hover:text-white'
               }`}
             >
               1g Terrestrial
@@ -135,7 +142,7 @@ export const Experiments: React.FC = () => {
       </div>
 
       {/* ── STANDARDIZED DATA TABLE ──────────────────────────────────────── */}
-      <div className="table-shell shadow-2xs">
+      <div className="table-shell">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[960px]">
             <thead>
@@ -150,16 +157,16 @@ export const Experiments: React.FC = () => {
                 <th className="table-header-cell text-right w-28 whitespace-nowrap">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-[rgba(120,165,255,0.1)]">
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="table-body-cell text-center py-12 text-xs text-[#8F8F8F]">
-                    Loading experiment datasets...
+                  <td colSpan={8} className="table-body-cell text-center py-12 text-xs text-[#78869C]">
+                    Loading experiment datasets from NASA PSI index...
                   </td>
                 </tr>
               ) : experiments.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="table-body-cell text-center py-12 text-xs text-[#8F8F8F]">
+                  <td colSpan={8} className="table-body-cell text-center py-12 text-xs text-[#78869C]">
                     No experiments match the selected criteria.
                   </td>
                 </tr>
@@ -168,35 +175,35 @@ export const Experiments: React.FC = () => {
                   <tr
                     key={exp.id || exp.experiment_id}
                     onClick={() => setSelectedExp(exp)}
-                    className="hover:bg-[#F9F9FA] cursor-pointer transition-colors"
+                    className="hover:bg-[#101B30]/70 cursor-pointer transition-colors"
                   >
-                    <td className="table-body-cell font-mono text-xs font-semibold text-[#B86B39] whitespace-nowrap">
+                    <td className="table-body-cell font-mono text-xs font-semibold text-[#69B7FF] whitespace-nowrap">
                       {exp.experiment_id}
                     </td>
                     <td className="table-body-cell min-w-[200px]">
-                      <div className="font-medium text-[#0D0D0D]">{exp.fuel_type}</div>
-                      <div className="text-[11px] font-mono text-[#8F8F8F]">
+                      <div className="font-medium text-white">{exp.fuel_type}</div>
+                      <div className="text-[11px] font-mono text-[#AAB6CA]">
                         d₀ = {exp.initial_fuel_diameter_mm ? `${exp.initial_fuel_diameter_mm.toFixed(2)} mm` : '1.50 mm'}
                       </div>
                     </td>
-                    <td className="table-body-cell text-xs text-[#555555] whitespace-nowrap">
+                    <td className="table-body-cell text-xs text-[#AAB6CA] whitespace-nowrap">
                       <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-mono font-medium mr-1.5 ${
-                        exp.gravity_level === 0 ? 'bg-[#F8F1EC] text-[#B86B39] border border-[#EBDAD0]' : 'bg-[#F0F0F0] text-[#555555]'
+                        exp.gravity_level === 0 ? 'bg-[#1769FF]/20 text-[#69B7FF] border border-[#2F82FF]/40' : 'bg-slate-800 text-slate-300'
                       }`}>
                         {exp.gravity_level === 0 ? '0g' : '1g'}
                       </span>
                       <span>{exp.ambient_o2_percent ?? 21}% O₂</span>
                     </td>
-                    <td className="table-body-cell font-mono text-xs text-[#555555] whitespace-nowrap">
+                    <td className="table-body-cell font-mono text-xs text-[#AAB6CA] whitespace-nowrap">
                       {exp.chamber_pressure_kpa ? `${(exp.chamber_pressure_kpa / 101.325).toFixed(2)} atm` : '1.00 atm'}
                     </td>
-                    <td className="table-body-cell font-mono text-xs font-semibold text-[#0D0D0D] whitespace-nowrap">
+                    <td className="table-body-cell font-mono text-xs font-semibold text-[#38BDF8] whitespace-nowrap">
                       {exp.burning_rate_constant_k ? `${exp.burning_rate_constant_k.toFixed(3)} mm²/s` : '—'}
                     </td>
-                    <td className="table-body-cell text-xs text-[#6E6E6E] whitespace-nowrap">
+                    <td className="table-body-cell text-xs text-[#AAB6CA] whitespace-nowrap">
                       {exp.extinction_mode || 'Radiative'}
                     </td>
-                    <td className="table-body-cell text-xs text-[#8F8F8F] whitespace-nowrap">
+                    <td className="table-body-cell text-xs text-[#78869C] whitespace-nowrap">
                       {exp.mission_platform || exp.series || 'ISS CIR'}
                     </td>
                     <td className="table-body-cell text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
@@ -204,14 +211,14 @@ export const Experiments: React.FC = () => {
                         <Link
                           to={`/combustion?experimentId=${exp.experiment_id}`}
                           title="Open in Flame Analysis"
-                          className="px-2 py-1 text-xs font-medium text-[#0D0D0D] hover:text-[#B86B39] hover:bg-[#F0F0F0] rounded transition-colors"
+                          className="px-2 py-1 text-xs font-medium text-[#69B7FF] hover:text-white hover:bg-[#1769FF]/20 rounded transition-colors"
                         >
                           Analyze
                         </Link>
                         <Link
                           to={`/analysis?expA=${exp.experiment_id}`}
                           title="Compare with another experiment"
-                          className="px-2 py-1 text-xs font-medium text-[#6E6E6E] hover:text-[#0D0D0D] hover:bg-[#F0F0F0] rounded transition-colors"
+                          className="px-2 py-1 text-xs font-medium text-[#AAB6CA] hover:text-white hover:bg-white/10 rounded transition-colors"
                         >
                           Compare
                         </Link>
@@ -227,23 +234,23 @@ export const Experiments: React.FC = () => {
 
       {/* ── EXPERIMENT DETAIL MODAL ──────────────────────────────────────── */}
       {selectedExp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
-          <div className="w-full max-w-xl bg-white border border-[#E5E5E5] rounded-[12px] shadow-xl overflow-hidden flex flex-col">
-            <div className="p-5 border-b border-[#E5E5E5] bg-[#F7F7F8] flex items-start justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="w-full max-w-xl bg-[#07111F] border border-[rgba(120,165,255,0.35)] rounded-2xl shadow-[0_0_50px_rgba(35,112,255,0.4)] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-5 border-b border-[rgba(120,165,255,0.18)] bg-[#101B30]/60 flex items-start justify-between">
               <div>
-                <span className="font-mono text-xs font-semibold text-[#B86B39]">
+                <span className="font-mono text-xs font-semibold text-[#69B7FF]">
                   {selectedExp.experiment_id}
                 </span>
-                <h3 className="text-base font-semibold text-[#0D0D0D] mt-1">
+                <h3 className="text-base font-semibold text-white mt-1">
                   {selectedExp.title || `${selectedExp.fuel_type} Combustion Test`}
                 </h3>
-                <p className="text-xs text-[#6E6E6E]">
+                <p className="text-xs text-[#AAB6CA]">
                   Platform: {selectedExp.mission_platform || 'ISS CIR'} • Series: {selectedExp.series}
                 </p>
               </div>
               <button
                 onClick={() => setSelectedExp(null)}
-                className="p-1 rounded text-[#8F8F8F] hover:text-[#0D0D0D] hover:bg-[#EAEAEA]"
+                className="p-1.5 rounded-lg text-[#78869C] hover:text-white hover:bg-white/10"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -251,49 +258,49 @@ export const Experiments: React.FC = () => {
 
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div className="p-3 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px]">
-                  <span className="text-[#8F8F8F] block">Gravity</span>
-                  <span className="font-semibold text-[#0D0D0D] mt-0.5 block font-mono">
+                <div className="p-3 bg-[#101B30]/70 border border-[rgba(120,165,255,0.18)] rounded-xl">
+                  <span className="text-[#78869C] block">Gravity</span>
+                  <span className="font-semibold text-white mt-0.5 block font-mono">
                     {selectedExp.gravity_level === 0 ? '0g Microgravity' : '1g'}
                   </span>
                 </div>
-                <div className="p-3 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px]">
-                  <span className="text-[#8F8F8F] block">Oxygen (O₂)</span>
-                  <span className="font-semibold text-[#0D0D0D] mt-0.5 block font-mono">
+                <div className="p-3 bg-[#101B30]/70 border border-[rgba(120,165,255,0.18)] rounded-xl">
+                  <span className="text-[#78869C] block">Oxygen (O₂)</span>
+                  <span className="font-semibold text-white mt-0.5 block font-mono">
                     {selectedExp.ambient_o2_percent ?? 21}%
                   </span>
                 </div>
-                <div className="p-3 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px]">
-                  <span className="text-[#8F8F8F] block">Burn Rate K</span>
-                  <span className="font-semibold text-[#B86B39] mt-0.5 block font-mono">
+                <div className="p-3 bg-[#101B30]/70 border border-[rgba(120,165,255,0.18)] rounded-xl">
+                  <span className="text-[#78869C] block">Burn Rate K</span>
+                  <span className="font-semibold text-[#38BDF8] mt-0.5 block font-mono">
                     {selectedExp.burning_rate_constant_k ? `${selectedExp.burning_rate_constant_k.toFixed(3)} mm²/s` : '—'}
                   </span>
                 </div>
-                <div className="p-3 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px]">
-                  <span className="text-[#8F8F8F] block">Flame Temp</span>
-                  <span className="font-semibold text-[#0D0D0D] mt-0.5 block font-mono">
+                <div className="p-3 bg-[#101B30]/70 border border-[rgba(120,165,255,0.18)] rounded-xl">
+                  <span className="text-[#78869C] block">Flame Temp</span>
+                  <span className="font-semibold text-white mt-0.5 block font-mono">
                     {selectedExp.peak_flame_temperature_k ? `${selectedExp.peak_flame_temperature_k} K` : '—'}
                   </span>
                 </div>
               </div>
 
               <div>
-                <h4 className="text-xs font-semibold text-[#8F8F8F] uppercase tracking-wide mb-1.5">
+                <h4 className="text-xs font-semibold text-[#AAB6CA] uppercase tracking-wide mb-1.5">
                   Scientific Observation
                 </h4>
-                <div className="p-3 bg-[#F7F7F8] border border-[#E5E5E5] rounded-[8px] text-xs text-[#2D2D2D] leading-relaxed">
+                <div className="p-3.5 bg-[#101B30]/50 border border-[rgba(120,165,255,0.18)] rounded-xl text-xs text-[#E2E8F0] leading-relaxed">
                   {selectedExp.key_finding || 'Isolated droplet combustion showing classical d²-law regression with spherical flame standoff geometry.'}
                 </div>
               </div>
 
               {selectedExp.citation && (
-                <div className="text-[11px] text-[#8F8F8F] font-mono">
+                <div className="text-[11px] text-[#78869C] font-mono">
                   Citation: {selectedExp.citation}
                 </div>
               )}
             </div>
 
-            <div className="p-4 border-t border-[#E5E5E5] bg-[#F7F7F8] flex items-center justify-between">
+            <div className="p-4 border-t border-[rgba(120,165,255,0.18)] bg-[#0C182B] flex items-center justify-between">
               <button
                 onClick={() => {
                   const id = selectedExp.experiment_id;
@@ -315,7 +322,7 @@ export const Experiments: React.FC = () => {
                 </Link>
                 <button
                   onClick={() => setSelectedExp(null)}
-                  className="px-3 py-1.5 text-xs text-[#6E6E6E] hover:text-[#0D0D0D]"
+                  className="px-3 py-1.5 text-xs text-[#AAB6CA] hover:text-white"
                 >
                   Close
                 </button>

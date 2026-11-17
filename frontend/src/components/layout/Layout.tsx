@@ -1,24 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Navbar } from './Navbar';
-import { Sidebar } from './Sidebar';
+import { AppLauncherDrawer } from './AppLauncherDrawer';
 import { IngestModal } from '../ui/IngestModal';
 import { DataSourcesModal } from '../ui/DataSourcesModal';
 import { GlobalSearchModal } from '../ui/GlobalSearchModal';
+import { SignInModal } from '../ui/SignInModal';
 
 export const Layout: React.FC = () => {
   const [isIngestOpen, setIsIngestOpen] = useState(false);
   const [isSourcesOpen, setIsSourcesOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isAppDeckOpen, setIsAppDeckOpen] = useState(false);
+  const [isSignInOpen, setIsSignInOpen] = useState(false);
 
   const location = useLocation();
-
-  // Close mobile nav on route change
-  useEffect(() => {
-    setIsMobileNavOpen(false);
-  }, [location.pathname]);
 
   // Global Ctrl+K / Cmd+K listener
   useEffect(() => {
@@ -32,50 +28,39 @@ export const Layout: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  return (
-    <div className="min-h-screen bg-white text-[#0D0D0D] flex font-sans selection:bg-[#B86B39]/15 selection:text-[#B86B39]">
-      {/* Mobile Backdrop Overlay */}
-      {isMobileNavOpen && (
-        <div
-          onClick={() => setIsMobileNavOpen(false)}
-          className="fixed inset-0 bg-black/20 z-30 lg:hidden transition-opacity"
-          aria-hidden="true"
-        />
-      )}
+  // Close drawers/modals on route change
+  useEffect(() => {
+    setIsAppDeckOpen(false);
+  }, [location.pathname]);
 
-      {/* Sidebar: Fixed on desktop, drawer on mobile */}
-      <Sidebar
-        isOpen={isMobileNavOpen}
-        isCollapsed={isSidebarCollapsed}
-        onToggleCollapse={() => setIsSidebarCollapsed(prev => !prev)}
-        onClose={() => setIsMobileNavOpen(false)}
-        onOpenSources={() => {
-          setIsMobileNavOpen(false);
-          setIsSourcesOpen(true);
-        }}
-        onOpenIngest={() => {
-          setIsMobileNavOpen(false);
-          setIsIngestOpen(true);
-        }}
+  return (
+    <div className="min-h-screen bg-[#02050C] text-white flex flex-col font-sans selection:bg-[#1769FF]/35 selection:text-white">
+      {/* ── SLIM TOP NAVIGATION BAR (FAITHFUL TO REFERENCE) ──────────────── */}
+      <Navbar
+        onOpenSearch={() => setIsSearchOpen(true)}
+        onOpenSources={() => setIsSourcesOpen(true)}
+        onOpenAppDeck={() => setIsAppDeckOpen(true)}
+        onOpenSignIn={() => setIsSignInOpen(true)}
       />
 
-      {/* Main Workspace Column */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden overflow-x-hidden bg-white">
-        <Navbar
-          onOpenSearch={() => setIsSearchOpen(true)}
-          onOpenSources={() => setIsSourcesOpen(true)}
-          isMobileNavOpen={isMobileNavOpen}
-          onToggleMobileNav={() => setIsMobileNavOpen(prev => !prev)}
-          isSidebarCollapsed={isSidebarCollapsed}
-          onToggleSidebarCollapse={() => setIsSidebarCollapsed(prev => !prev)}
-        />
+      {/* ── MAIN WORKSPACE CONTENT ───────────────────────────────────────── */}
+      <main className="flex-1 w-full min-w-0 bg-[#02050C]">
+        <Outlet />
+      </main>
 
-        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-white min-w-0">
-          <Outlet />
-        </main>
-      </div>
+      {/* ── 9-DOTS AEROSPACE APPLICATION LAUNCHER DECK ───────────────────── */}
+      <AppLauncherDrawer
+        isOpen={isAppDeckOpen}
+        onClose={() => setIsAppDeckOpen(false)}
+        onOpenSources={() => setIsSourcesOpen(true)}
+        onOpenIngest={() => setIsIngestOpen(true)}
+      />
 
-      {/* Global Modals */}
+      {/* ── GLOBAL MODALS ─────────────────────────────────────────────────── */}
+      <SignInModal
+        isOpen={isSignInOpen}
+        onClose={() => setIsSignInOpen(false)}
+      />
       <IngestModal
         isOpen={isIngestOpen}
         onClose={() => setIsIngestOpen(false)}

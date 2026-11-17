@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import {
   ShieldCheck,
-  Sun,
+  Moon,
   Check,
   RotateCcw,
   Key,
   Eye,
   EyeOff,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  Sparkles,
+  Sliders,
+  Database,
+  Info
 } from 'lucide-react';
 
 export const Settings: React.FC = () => {
@@ -86,78 +90,65 @@ export const Settings: React.FC = () => {
       {/* ── UNIFIED PAGE HEADER ─────────────────────────────────────────── */}
       <div className="page-header">
         <div>
-          <h1 className="page-title">System Settings & Preferences</h1>
+          <div className="flex items-center space-x-2 text-xs font-mono text-[#69B7FF] mb-1">
+            <Sliders className="w-4 h-4 text-[#2F82FF]" />
+            <span>PLATFORM CONFIGURATION & PREFERENCES</span>
+          </div>
+          <h1 className="page-title">System Settings</h1>
           <p className="page-subtitle">
-            Configure AI reasoning parameters, data caching, and platform options.
+            Configure AI reasoning parameters, Gemini API keys, data caching, and visual modes.
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* Navigation Sidebar */}
-        <div className="space-y-1">
-          <button
-            onClick={() => setActiveTab('general')}
-            className={`w-full text-left px-3 py-2 rounded-[8px] text-xs font-medium transition-colors ${
-              activeTab === 'general'
-                ? 'bg-[#EAEAEA] text-[#0D0D0D] font-semibold'
-                : 'text-[#6E6E6E] hover:text-[#0D0D0D] hover:bg-[#F7F7F8]'
-            }`}
-          >
-            General & Appearance
-          </button>
-          <button
-            onClick={() => setActiveTab('ai')}
-            className={`w-full text-left px-3 py-2 rounded-[8px] text-xs font-medium transition-colors ${
-              activeTab === 'ai'
-                ? 'bg-[#EAEAEA] text-[#0D0D0D] font-semibold'
-                : 'text-[#6E6E6E] hover:text-[#0D0D0D] hover:bg-[#F7F7F8]'
-            }`}
-          >
-            AI Engine & RAG
-          </button>
-          <button
-            onClick={() => setActiveTab('data')}
-            className={`w-full text-left px-3 py-2 rounded-[8px] text-xs font-medium transition-colors ${
-              activeTab === 'data'
-                ? 'bg-[#EAEAEA] text-[#0D0D0D] font-semibold'
-                : 'text-[#6E6E6E] hover:text-[#0D0D0D] hover:bg-[#F7F7F8]'
-            }`}
-          >
-            Data Provenance
-          </button>
-          <button
-            onClick={() => setActiveTab('about')}
-            className={`w-full text-left px-3 py-2 rounded-[8px] text-xs font-medium transition-colors ${
-              activeTab === 'about'
-                ? 'bg-[#EAEAEA] text-[#0D0D0D] font-semibold'
-                : 'text-[#6E6E6E] hover:text-[#0D0D0D] hover:bg-[#F7F7F8]'
-            }`}
-          >
-            About FlameLens
-          </button>
+        <div className="space-y-1.5">
+          {[
+            { id: 'general', label: 'General & Appearance', icon: Moon },
+            { id: 'ai', label: 'AI Engine & Gemini API', icon: Sparkles },
+            { id: 'data', label: 'Data Provenance & Cache', icon: Database },
+            { id: 'about', label: 'About FlameLens', icon: Info },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isSelected = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all flex items-center space-x-2.5 ${
+                  isSelected
+                    ? 'bg-[#1769FF] text-white font-semibold shadow-[0_0_12px_rgba(47,130,255,0.5)]'
+                    : 'text-[#AAB6CA] hover:text-white hover:bg-white/5 bg-[#07111F]/60 border border-[rgba(120,165,255,0.12)]'
+                }`}
+              >
+                <Icon className="w-4 h-4 text-[#69B7FF]" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Content Pane */}
         <div className="md:col-span-3 space-y-6">
           {activeTab === 'general' && (
-            <div className="p-6 bg-white border border-[#E5E5E5] rounded-[10px] space-y-6 shadow-2xs">
+            <div className="p-6 bg-[#07111F] border border-[rgba(120,165,255,0.2)] rounded-2xl space-y-6">
               <div>
-                <h3 className="text-sm font-semibold text-[#0D0D0D]">Appearance</h3>
-                <p className="text-xs text-[#6E6E6E] mt-0.5">
-                  FlameLens uses the ChatGPT-inspired minimal scientific research theme.
+                <h3 className="text-sm font-semibold text-white">Appearance & Visual System</h3>
+                <p className="text-xs text-[#AAB6CA] mt-0.5">
+                  FlameLens uses the cinematic deep-space NASA Search aesthetic.
                 </p>
                 <div className="mt-3 flex items-center space-x-3">
-                  <div className="p-3 bg-[#F7F7F8] border-2 border-[#0D0D0D] rounded-[8px] text-xs font-medium text-[#0D0D0D] flex items-center space-x-2">
-                    <Sun className="w-4 h-4 text-[#B86B39]" />
-                    <span>Scientific Light (Active)</span>
+                  <div className="p-3 bg-[#101B30] border-2 border-[#2F82FF] rounded-xl text-xs font-medium text-white flex items-center space-x-2 shadow-[0_0_15px_rgba(47,130,255,0.3)]">
+                    <Moon className="w-4 h-4 text-[#69B7FF]" />
+                    <span>NASA Deep Space Experience (Active)</span>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-[#E5E5E5]">
-                <h3 className="text-sm font-semibold text-[#0D0D0D]">Research Team</h3>
-                <p className="text-xs text-[#6E6E6E] mt-0.5">
+              <div className="pt-4 border-t border-[rgba(120,165,255,0.14)]">
+                <h3 className="text-sm font-semibold text-white">Research Team</h3>
+                <p className="text-xs text-[#AAB6CA] mt-0.5">
                   QuantumX — NASA Space Apps Challenge 2026, Challenge 08: Flame in Freefall.
                 </p>
               </div>
@@ -165,14 +156,14 @@ export const Settings: React.FC = () => {
           )}
 
           {activeTab === 'ai' && (
-            <div className="p-6 bg-white border border-[#E5E5E5] rounded-[10px] space-y-6 shadow-2xs">
+            <div className="p-6 bg-[#07111F] border border-[rgba(120,165,255,0.2)] rounded-2xl space-y-6">
               {/* Gemini API Key Section */}
               <div>
                 <div className="flex items-center space-x-2">
-                  <Key className="w-4 h-4 text-[#B86B39]" />
-                  <h3 className="text-sm font-semibold text-[#0D0D0D]">Google Gemini API Key (Direct Browser Inference)</h3>
+                  <Key className="w-4 h-4 text-[#2F82FF]" />
+                  <h3 className="text-sm font-semibold text-white">Google Gemini API Key (Direct Browser Inference)</h3>
                 </div>
-                <p className="text-xs text-[#6E6E6E] mt-1">
+                <p className="text-xs text-[#AAB6CA] mt-1">
                   Connect your Google Gemini API key to enable live, real-time Gemini 2.5 Flash research reasoning directly from your browser.
                   Stored strictly in your local browser sandbox—never committed, logged, or sent to third-party servers.
                 </p>
@@ -193,7 +184,7 @@ export const Settings: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setShowKey(!showKey)}
-                        className="p-1 text-[#8F8F8F] hover:text-[#0D0D0D] transition-colors"
+                        className="p-1 text-[#78869C] hover:text-white transition-colors"
                         title={showKey ? 'Hide key' : 'Show key'}
                       >
                         {showKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
@@ -234,7 +225,7 @@ export const Settings: React.FC = () => {
                       <button
                         type="button"
                         onClick={handleClearKey}
-                        className="btn-secondary text-xs text-red-600 hover:text-red-700"
+                        className="btn-secondary text-xs text-red-400 hover:text-red-300"
                       >
                         <span>Remove Key</span>
                       </button>
@@ -242,31 +233,31 @@ export const Settings: React.FC = () => {
                   </div>
 
                   {keyStatus === 'valid' && (
-                    <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-[6px] text-xs text-emerald-800 flex items-center space-x-2">
-                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <div className="p-3 bg-emerald-950/40 border border-emerald-500/30 rounded-xl text-xs text-emerald-300 flex items-center space-x-2">
+                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                       <span>{keyMessage || 'Gemini 2.5 Flash connected and active.'}</span>
                     </div>
                   )}
 
                   {keyStatus === 'invalid' && (
-                    <div className="p-2.5 bg-red-50 border border-red-200 rounded-[6px] text-xs text-red-800 flex items-center space-x-2">
-                      <AlertCircle className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                    <div className="p-3 bg-red-950/40 border border-red-500/30 rounded-xl text-xs text-red-300 flex items-center space-x-2">
+                      <AlertCircle className="w-3.5 h-3.5 text-red-400 shrink-0" />
                       <span>{keyMessage || 'Validation failed. Check your API key.'}</span>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-[#E5E5E5]">
-                <h3 className="text-sm font-semibold text-[#0D0D0D]">Temperature / Determinism</h3>
-                <p className="text-xs text-[#6E6E6E] mt-0.5">
+              <div className="pt-4 border-t border-[rgba(120,165,255,0.14)]">
+                <h3 className="text-sm font-semibold text-white">Temperature / Determinism</h3>
+                <p className="text-xs text-[#AAB6CA] mt-0.5">
                   Lower temperature enforces strict scientific fidelity and factual adherence to NASA flight records.
                 </p>
                 <div className="mt-3 space-y-2">
                   <div className="flex justify-between text-xs font-mono">
-                    <span className="text-[#6E6E6E]">Factual (0.0)</span>
-                    <span className="text-[#0D0D0D] font-semibold">{temperature.toFixed(2)}</span>
-                    <span className="text-[#6E6E6E]">Creative (1.0)</span>
+                    <span className="text-[#78869C]">Factual (0.0)</span>
+                    <span className="text-[#38BDF8] font-semibold">{temperature.toFixed(2)}</span>
+                    <span className="text-[#78869C]">Creative (1.0)</span>
                   </div>
                   <input
                     type="range"
@@ -275,14 +266,14 @@ export const Settings: React.FC = () => {
                     step="0.05"
                     value={temperature}
                     onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                    className="w-full accent-[#0D0D0D]"
+                    className="w-full accent-[#2F82FF]"
                   />
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-[#E5E5E5]">
-                <h3 className="text-sm font-semibold text-[#0D0D0D]">RAG Retrieval Chunk Count (K)</h3>
-                <p className="text-xs text-[#6E6E6E] mt-0.5">
+              <div className="pt-4 border-t border-[rgba(120,165,255,0.14)]">
+                <h3 className="text-sm font-semibold text-white">RAG Retrieval Chunk Count (K)</h3>
+                <p className="text-xs text-[#AAB6CA] mt-0.5">
                   Number of verified research documents retrieved per query.
                 </p>
                 <div className="mt-3 flex items-center space-x-3">
@@ -290,10 +281,10 @@ export const Settings: React.FC = () => {
                     <button
                       key={k}
                       onClick={() => setDocRetrievalK(k)}
-                      className={`px-3 py-1.5 rounded-[6px] text-xs font-mono font-medium border ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium border ${
                         docRetrievalK === k
-                          ? 'bg-[#0D0D0D] text-white border-[#0D0D0D]'
-                          : 'bg-[#F7F7F8] text-[#555555] border-[#E5E5E5]'
+                          ? 'bg-[#1769FF] text-white border-[#2F82FF] shadow-[0_0_8px_rgba(47,130,255,0.5)]'
+                          : 'bg-[#101B30]/70 text-[#AAB6CA] border-[rgba(120,165,255,0.18)]'
                       }`}
                     >
                       K = {k}
@@ -305,21 +296,21 @@ export const Settings: React.FC = () => {
           )}
 
           {activeTab === 'data' && (
-            <div className="p-6 bg-white border border-[#E5E5E5] rounded-[10px] space-y-6 shadow-2xs">
+            <div className="p-6 bg-[#07111F] border border-[rgba(120,165,255,0.2)] rounded-2xl space-y-6">
               <div>
-                <h3 className="text-sm font-semibold text-[#0D0D0D]">Offline Dataset Resilience</h3>
-                <p className="text-xs text-[#6E6E6E] mt-0.5">
+                <h3 className="text-sm font-semibold text-white">Offline Dataset Resilience</h3>
+                <p className="text-xs text-[#AAB6CA] mt-0.5">
                   Static NASA flight data fallbacks are active to ensure complete operation even during network interruptions.
                 </p>
-                <div className="mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-[8px] text-xs text-emerald-800 flex items-center space-x-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                <div className="mt-3 p-3.5 bg-[#101B30] border border-[rgba(120,165,255,0.2)] rounded-xl text-xs text-[#38BDF8] flex items-center space-x-2">
+                  <ShieldCheck className="w-4 h-4 text-[#38BDF8] shrink-0" />
                   <span>42 Verified Experiments & 28 NASA Technical Documents cached in local bundle.</span>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-[#E5E5E5]">
-                <h3 className="text-sm font-semibold text-[#0D0D0D]">Local Cache</h3>
-                <p className="text-xs text-[#6E6E6E] mt-0.5">
+              <div className="pt-4 border-t border-[rgba(120,165,255,0.14)]">
+                <h3 className="text-sm font-semibold text-white">Local Cache</h3>
+                <p className="text-xs text-[#AAB6CA] mt-0.5">
                   Clear stored query sessions and UI preference cache.
                 </p>
                 <div className="mt-3">
@@ -329,8 +320,8 @@ export const Settings: React.FC = () => {
                   >
                     {cacheCleared ? (
                       <>
-                        <Check className="w-3.5 h-3.5 text-emerald-600" />
-                        <span className="text-emerald-600">Cache Cleared</span>
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-400">Cache Cleared</span>
                       </>
                     ) : (
                       <>
@@ -345,26 +336,26 @@ export const Settings: React.FC = () => {
           )}
 
           {activeTab === 'about' && (
-            <div className="p-6 bg-white border border-[#E5E5E5] rounded-[10px] space-y-4 shadow-2xs">
-              <div className="flex items-center space-x-2.5">
+            <div className="p-6 bg-[#07111F] border border-[rgba(120,165,255,0.2)] rounded-2xl space-y-4">
+              <div className="flex items-center space-x-3">
                 <img
                   src="/logo.png"
-                  alt="FlameLens Q Insignia"
-                  className="w-8 h-8 object-contain shrink-0"
+                  alt="FlameLens Emblem"
+                  className="w-10 h-10 object-contain shrink-0 drop-shadow-[0_0_12px_rgba(47,130,255,0.7)]"
                 />
                 <div>
-                  <h3 className="text-sm font-semibold text-[#0D0D0D]">FlameLens AI</h3>
-                  <p className="text-[11px] text-[#8F8F8F]">Version 1.4.2 • Scientific Intelligence</p>
+                  <h3 className="text-sm font-semibold text-white">FlameLens AI</h3>
+                  <p className="text-[11px] text-[#AAB6CA]">Version 2.0 • NASA Search Experience</p>
                 </div>
               </div>
 
-              <p className="text-xs text-[#2D2D2D] leading-relaxed">
+              <p className="text-xs text-[#CBD5E1] leading-relaxed">
                 FlameLens AI was developed for the NASA Space Apps Challenge 2026, addressing Challenge 08: Flame in Freefall. The system bridges NASA microgravity combustion physics, empirical droplet kinetic regression ($d^2$-law), and spacecraft habitat fire safety intelligence.
               </p>
 
-              <div className="pt-2 text-xs space-y-2 border-t border-[#E5E5E5]">
-                <div className="text-[#8F8F8F]">Primary Scientific Data Sources:</div>
-                <ul className="list-disc pl-4 space-y-1 text-[#2D2D2D]">
+              <div className="pt-3 text-xs space-y-2 border-t border-[rgba(120,165,255,0.14)]">
+                <div className="text-[#69B7FF] font-semibold">Primary Scientific Data Sources:</div>
+                <ul className="list-disc pl-4 space-y-1 text-[#AAB6CA] marker:text-[#2F82FF]">
                   <li>NASA Glenn Research Center (GRC) Combustion Science Branch</li>
                   <li>NASA Physical Sciences Informatics (PSI) System</li>
                   <li>NASA Technical Reports Server (NTRS)</li>

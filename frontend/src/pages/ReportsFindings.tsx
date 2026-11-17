@@ -9,7 +9,8 @@ import {
   ShieldCheck,
   Loader2,
   FileSpreadsheet,
-  FileCode
+  FileCode,
+  Sparkles
 } from 'lucide-react';
 import { api } from '../services/api';
 import { Experiment } from '../types';
@@ -165,7 +166,11 @@ export const ReportsFindings: React.FC = () => {
       {/* ── UNIFIED PAGE HEADER ─────────────────────────────────────────── */}
       <div className="page-header">
         <div>
-          <h1 className="page-title">Research Reports</h1>
+          <div className="flex items-center space-x-2 text-xs font-mono text-[#69B7FF] mb-1">
+            <FileText className="w-4 h-4 text-[#2F82FF]" />
+            <span>NASA-STD-6001B BRIEFING GENERATOR</span>
+          </div>
+          <h1 className="page-title">Research Reports & Briefings</h1>
           <p className="page-subtitle">
             Structured scientific synthesis, droplet regression briefs, and spacecraft fire safety documentation.
           </p>
@@ -178,7 +183,7 @@ export const ReportsFindings: React.FC = () => {
               className="btn-secondary"
               title="Copy markdown content to clipboard"
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Copied' : 'Copy'}</span>
             </button>
             <button
@@ -194,7 +199,7 @@ export const ReportsFindings: React.FC = () => {
               className="btn-secondary"
               title="Export experimental measurements matrix to CSV"
             >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
               <span>CSV</span>
             </button>
             <button
@@ -202,7 +207,7 @@ export const ReportsFindings: React.FC = () => {
               className="btn-secondary"
               title="Export structured flight telemetry as JSON"
             >
-              <FileCode className="w-3.5 h-3.5 text-blue-600" />
+              <FileCode className="w-3.5 h-3.5 text-[#38BDF8]" />
               <span>JSON</span>
             </button>
             <button
@@ -218,22 +223,22 @@ export const ReportsFindings: React.FC = () => {
       </div>
 
       {/* ── REPORT GENERATOR CONTROLS ────────────────────────────────────── */}
-      <div className="p-5 bg-white border border-[#E5E5E5] rounded-[10px] space-y-4 shadow-2xs">
+      <div className="p-6 bg-[#07111F] border border-[rgba(120,165,255,0.2)] rounded-2xl space-y-5">
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-[#0D0D0D]">
-            Report Title
+          <label className="text-xs font-semibold text-white">
+            Briefing Document Title
           </label>
           <input
             type="text"
             value={reportTitle}
             onChange={(e) => setReportTitle(e.target.value)}
-            className="input-standard w-full"
+            className="input-standard w-full font-medium"
           />
         </div>
 
         <div>
-          <label className="text-xs font-semibold text-[#8F8F8F] uppercase tracking-wide block mb-2">
-            Selected Experiments for Synthesis (Select up to 5)
+          <label className="text-xs font-semibold text-[#69B7FF] uppercase tracking-wide block mb-2">
+            Selected Flight Datasets for Synthesis (Select up to 5)
           </label>
           <div className="flex flex-wrap gap-2">
             {experiments.slice(0, 10).map((exp) => {
@@ -242,10 +247,10 @@ export const ReportsFindings: React.FC = () => {
                 <button
                   key={exp.experiment_id}
                   onClick={() => toggleSelect(exp.experiment_id)}
-                  className={`px-3 py-1.5 rounded-[7px] text-xs font-medium border transition-colors ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                     isSelected
-                      ? 'bg-[#0D0D0D] text-white border-[#0D0D0D]'
-                      : 'bg-[#F7F7F8] text-[#555555] hover:bg-[#EAEAEA] border-[#E5E5E5]'
+                      ? 'bg-[#1769FF] text-white border-[#2F82FF] shadow-[0_0_10px_rgba(47,130,255,0.5)]'
+                      : 'bg-[#101B30]/70 text-[#AAB6CA] hover:text-white border-[rgba(120,165,255,0.18)]'
                   }`}
                 >
                   {exp.experiment_id} ({exp.fuel_type})
@@ -255,25 +260,25 @@ export const ReportsFindings: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-2 border-t border-[#E5E5E5]">
-          <div className="flex items-center space-x-4 text-xs text-[#555555]">
-            <label className="flex items-center space-x-1.5 cursor-pointer">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-[rgba(120,165,255,0.14)]">
+          <div className="flex items-center space-x-4 text-xs text-[#AAB6CA]">
+            <label className="flex items-center space-x-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={includeRisk}
                 onChange={(e) => setIncludeRisk(e.target.checked)}
-                className="accent-[#0D0D0D]"
+                className="accent-[#2F82FF]"
               />
-              <span>Include Risk Assessment</span>
+              <span className="text-white">Include Flammability Screening Matrix</span>
             </label>
-            <label className="flex items-center space-x-1.5 cursor-pointer">
+            <label className="flex items-center space-x-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={includeTelemetry}
                 onChange={(e) => setIncludeTelemetry(e.target.checked)}
-                className="accent-[#0D0D0D]"
+                className="accent-[#2F82FF]"
               />
-              <span>Include Sensor Telemetry</span>
+              <span className="text-white">Include Sensor Telemetry</span>
             </label>
           </div>
 
@@ -282,39 +287,39 @@ export const ReportsFindings: React.FC = () => {
             disabled={loading}
             className="btn-primary"
           >
-            {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-            <span>{loading ? 'Synthesizing...' : 'Re-generate Report'}</span>
+            {loading && <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />}
+            <span>{loading ? 'Synthesizing...' : 'Re-generate Briefing'}</span>
           </button>
         </div>
       </div>
 
       {/* ── REPORT DOCUMENT VIEWER ───────────────────────────────────────── */}
       {generatedReport && (
-        <div className="p-8 sm:p-12 bg-white border border-[#E5E5E5] rounded-[10px] shadow-2xs space-y-6">
-          <div className="border-b border-[#E5E5E5] pb-4">
-            <div className="flex items-center space-x-2 text-xs font-mono text-[#8F8F8F] mb-1">
+        <div className="p-8 sm:p-12 bg-[#07111F] border border-[rgba(120,165,255,0.25)] rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.6)] space-y-6">
+          <div className="border-b border-[rgba(120,165,255,0.18)] pb-4">
+            <div className="flex items-center space-x-2 text-xs font-mono text-[#69B7FF] mb-1">
               <span>{generatedReport.report_id || 'RPT-FLAMELENS'}</span>
               <span>•</span>
               <span>{new Date(generatedReport.generated_at).toLocaleDateString()}</span>
             </div>
-            <h2 className="text-2xl font-bold text-[#0D0D0D] tracking-tight">
+            <h2 className="text-2xl font-bold text-white tracking-tight">
               {generatedReport.title}
             </h2>
           </div>
 
-          <div className="markdown-content text-[14px] text-[#2D2D2D] leading-relaxed space-y-4">
+          <div className="markdown-content text-[14px] text-[#E2E8F0] leading-relaxed space-y-4">
             {generatedReport.markdown_content.split('\n\n').map((block: string, idx: number) => {
               if (block.startsWith('# ')) return null; // Already shown in header
               if (block.startsWith('## ')) {
                 return (
-                  <h3 key={idx} className="text-base font-semibold text-[#0D0D0D] pt-3 pb-1 border-b border-[#E5E5E5]">
+                  <h3 key={idx} className="text-base font-semibold text-white pt-3 pb-1 border-b border-[rgba(120,165,255,0.15)]">
                     {block.replace('## ', '')}
                   </h3>
                 );
               }
               if (block.startsWith('- ')) {
                 return (
-                  <ul key={idx} className="list-disc pl-5 space-y-1">
+                  <ul key={idx} className="list-disc pl-5 space-y-1 marker:text-[#2F82FF]">
                     {block.split('\n').map((line: string, lIdx: number) => (
                       <li key={lIdx}>{line.replace(/^- /, '')}</li>
                     ))}
@@ -325,7 +330,7 @@ export const ReportsFindings: React.FC = () => {
             })}
           </div>
 
-          <div className="pt-6 border-t border-[#E5E5E5] flex items-center justify-between text-xs text-[#8F8F8F]">
+          <div className="pt-6 border-t border-[rgba(120,165,255,0.14)] flex items-center justify-between text-xs text-[#78869C]">
             <span>Validated against NASA Physical Sciences Informatics (PSI) Database</span>
             <span>NASA Space Apps 2026 • QuantumX</span>
           </div>

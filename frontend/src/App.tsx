@@ -3,6 +3,11 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { MissionOverview } from './pages/MissionOverview';
+import { SearchResults } from './pages/SearchResults';
+import { ImagesPage } from './pages/ImagesPage';
+import { VideosPage } from './pages/VideosPage';
+import { NewsPage } from './pages/NewsPage';
+import { SciencePage } from './pages/SciencePage';
 import { CombustionIntelligence } from './pages/CombustionIntelligence';
 import { ResearchExplorer } from './pages/ResearchExplorer';
 import { Experiments } from './pages/Experiments';
@@ -18,8 +23,17 @@ export const App: React.FC = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
-            {/* Core Scientific Intelligence Modules */}
+            {/* 1. Main NASA Search Experience Homepage */}
             <Route index element={<MissionOverview />} />
+
+            {/* 2. Core Search Channels */}
+            <Route path="search" element={<SearchResults />} />
+            <Route path="images" element={<ImagesPage />} />
+            <Route path="videos" element={<VideosPage />} />
+            <Route path="news" element={<NewsPage />} />
+            <Route path="science" element={<SciencePage />} />
+
+            {/* 3. Scientific Intelligence Modules */}
             <Route path="copilot" element={<AICopilot />} />
             <Route path="assistant" element={<AICopilot />} />
             <Route path="library" element={<ResearchExplorer />} />
@@ -33,7 +47,7 @@ export const App: React.FC = () => {
             <Route path="reports" element={<ReportsFindings />} />
             <Route path="settings" element={<Settings />} />
 
-            {/* Catch-all */}
+            {/* Catch-all Redirect */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>
